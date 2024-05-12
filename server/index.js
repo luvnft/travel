@@ -9,6 +9,7 @@ const citiesRoutes = require('./routes/Cities');
 const imageRoutes = require('./routes/Image');
 const config = require('./config');
 const authenticateJWT = require('./middlewares/authenticateJWT');
+const City = require('./models/City');
 const cors = require('cors'); 
 require('dotenv').config();
 
