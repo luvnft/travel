@@ -11,7 +11,10 @@ const config = require('./config');
 const authenticateJWT = require('./middlewares/authenticateJWT');
 const City = require('./models/City');
 const cors = require('cors'); 
-require('dotenv').config();
+const dotenv = require('dotenv');
+dotenv.config();
+
+
 
 const app = express();
 

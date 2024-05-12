@@ -1,9 +1,18 @@
 const cloudinary = require('cloudinary').v2;
 
+// Load environment variables
+const dotenv = require('dotenv');
+dotenv.config();
+
+
+const cloudname = process.env.CLOUDINARY_CLOUD_NAME;
+const apikey = process.env.CLOUDINARY_API_KEY;
+const api_secret = process.env.CLOUDINARY_API_SECRET;
+
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: cloudname,
+  api_key: apikey,
+  api_secret: api_secret,
 });
 
 const uploadImageToCloudinary = async (buffer) => {
