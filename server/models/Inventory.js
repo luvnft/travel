@@ -8,10 +8,10 @@ const inventorySchema = new Schema({
         ref: 'Room',
         required: true,
     },
-    date: {
+    datesBooked: [{
         type: Date,
-        required: true,
-    },
+        required: true
+    }],
     availableQuantity: {
         type: Number,
         required: true,

@@ -10,7 +10,8 @@ const imageRoutes = require('./routes/Image');
 const config = require('./config');
 const authenticateJWT = require('./middlewares/authenticateJWT');
 const City = require('./models/City');
-const cors = require('cors'); 
+const cors = require('cors');
+const roomRoutes = require('./routes/Room');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -24,15 +25,15 @@ mongoose.connect(config.mongoURI, { useNewUrlParser: true, useUnifiedTopology: t
 
 const citiesData = require('./data/cities.json');
 
-City.insertMany(citiesData)
-    .then(res => {
-        console.log("Data inserted")  
-        mongoose.connection.close();
-    })
-    .catch(e => {
-        console.log(e)     
-        mongoose.connection.close();
-    });
+// City.insertMany(citiesData)
+//     .then(res => {
+//         console.log("Data inserted")  
+//         mongoose.connection.close();
+//     })
+//     .catch(e => {
+//         console.log(e)     
+//         mongoose.connection.close();
+//     });
 
 const swaggerOptions = {
     definition: {
@@ -68,7 +69,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/flight', flightRoutes);
 app.use('/api/city', citiesRoutes);
 app.use('/api/image', imageRoutes);
- app.use('/api/hotel', hotelRoutes);
+app.use('/api/hotel', hotelRoutes);
+app.use('/api/room', roomRoutes);
+
 
 
 const PORT = process.env.PORT || 8080;

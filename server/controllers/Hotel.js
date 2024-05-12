@@ -1,4 +1,4 @@
-const { getCities, createHotel, getHotels } = require('../services/Hotels');
+const { getCities, createHotel, getHotels, deleteHotel } = require('../services/Hotels');
 
 
 const getCitiesController = async (req, res) => {
@@ -28,13 +28,23 @@ const getHotelsController = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}   
+}
 
+const deleteHotelController = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const hotel = await deleteHotel(id);
+        res.json(hotel);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
 
 module.exports = {
     getCitiesController,
     createHotelController,
-    getHotelsController
+    getHotelsController,
+    deleteHotelController
 };
 
 

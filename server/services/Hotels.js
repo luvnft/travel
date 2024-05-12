@@ -30,9 +30,26 @@ const getHotelById = async (id) => {
     return hotel;
 };
 
+const deleteHotel = async (id) => {
+    try {
+        const hotel = await Hotel.findById(id);
+        if (!hotel) {
+            throw new Error('Hotel not found');
+        }
+        await hotel.deleteOne();
+        return { message: "Hotel successfully deleted" };
+    } catch (error) {
+        throw new Error('Failed to delete hotel: ' + error.message);
+    }
+};
+
+
+
+
 module.exports = {
     createHotel,
     getHotels,
     getHotelById,
-    getCities
+    getCities,
+    deleteHotel
 };

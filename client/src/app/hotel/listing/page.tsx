@@ -7,71 +7,76 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChangeEvent } from 'react';
-import { Card } from '@/components/ui/card';
 import Navbar from '@/components/navbar';
-interface Hotel {
-    id: number;
+import { getHotelList } from '@/services/hotel'; 
+
+
+
+export interface Hotel {
+    _id: string;
     name: string;
-    imageUrl: string;
-    rating: number;
-    location: string;
+    address: string;
+    city: string;
+    longitude: string;
+    latitude: string;
+    cheapestPrice: number;
     description: string;
-    price: number;
+    rating: number;
     amenities: string[];
+    images: string[];
+    rooms: any[];  
+    cityId: string;
+    user: string;
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
 }
-const hotels = [
-    {
-        id: 1,
-        name: "Four Seasons Resort",
-        imageUrl: "https://www.fourseasons.com/content/dam/fourseasons/images/web/APL/APL_137_original.jpg",
-        rating: 5,
-        location: "Bali, Indonesia",
-        description: "Experience an unforgettable stay at our luxurious beachfront resort with state-of-the-art amenities and breathtaking ocean views.",
-        price: 399,
-        amenities: ["wifi", "pool", "gym", "spa", "restaurant"]
-    },
-    {
-        id: 2,
-        name: "Mountain Escape",
-        imageUrl: "https://www.fourseasons.com/content/dam/fourseasons/images/web/APL/APL_137_original.jpg",
-        rating: 4,
-        location: "Aspen, Colorado",
-        description: "Enjoy a cozy stay at our mountain lodge offering stunning views, ski-in/ski-out access, and a warm, rustic ambiance.",
-        price: 299,
-        amenities: ["wifi", "parking", "gym", "restaurant"]
-    },
-    {
-        id: 3,
-        name: "Urban Hotel Central",
-        imageUrl: "https://www.fourseasons.com/content/dam/fourseasons/images/web/APL/APL_137_original.jpg",
-        rating: 3,
-        location: "New York, USA",
-        description: "Perfectly located in the heart of the city, close to major attractions and shopping districts. Ideal for business and leisure travelers.",
-        price: 249,
-        amenities: ["wifi", "parking", "restaurant"]
-    }
-];
+
+
 
 export default function HotelListingPage() {
-    const [filteredHotels, setFilteredHotels] = useState(hotels);
+    const [hotels, setHotels] = useState<Hotel[]>([]);
+    const [filteredHotels, setFilteredHotels] = useState<Hotel[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState('');
 
+
+    useEffect(() => {
+        const fetchHotels = async () => {
+            setIsLoading(true);
+            try {
+                const data = await getHotelList();
+                setHotels(data);
+                setFilteredHotels(data);
+                setIsLoading(false);
+            } catch (err) {
+                console.error('Error fetching hotels:', err);
+                setError('Failed to fetch hotels');
+                setHotels([]);
+                setFilteredHotels([]);
+                setIsLoading(false);
+            }
+        };
+        fetchHotels();
+    }, [])
+    
     useEffect(() => {
         const filtered = hotels.filter(hotel =>
             hotel.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            hotel.location.toLowerCase().includes(searchTerm.toLowerCase())
+            hotel.city.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setFilteredHotels(filtered);
-    }, [searchTerm]);
+    }, [searchTerm, hotels]);
 
-    const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(e.target.value);
     };
 
     const sortHotels = (by: 'price' | 'rating') => {
         const sortedHotels = [...filteredHotels].sort((a, b) => {
             if (by === 'price') {
-                return a.price - b.price;
+                return a.cheapestPrice - b.cheapestPrice;
             } else if (by === 'rating') {
                 return b.rating - a.rating;
             }
@@ -83,8 +88,8 @@ export default function HotelListingPage() {
     return (
         <div>
             <Navbar />
-            <div className="flex">
-                <div className="w-64">
+            <div className="flex p-5">
+                <div className="w-64 p-2 hidden md:block">
                     <SidebarFilter />
                 </div>
                 <div className="flex-1 p-4">
@@ -95,9 +100,9 @@ export default function HotelListingPage() {
                         <Button onClick={() => sortHotels('price')} className="px-4 py-2 rounded bg-gray-200">Sort by Price</Button>
                         <Button onClick={() => sortHotels('rating')} className="px-4 py-2 rounded bg-gray-200">Sort by Rating</Button>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                         {filteredHotels.map(hotel => (
-                            <HotelCard key={hotel.id} hotel={hotel} />
+                            <HotelCard key={hotel._id} hotel={hotel} />
                         ))}
                     </div>
                 </div>

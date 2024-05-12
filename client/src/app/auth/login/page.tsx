@@ -30,6 +30,7 @@ import { useRouter } from 'next/navigation'
 import { login } from "@/services/auth";
 import { useToast } from "@/components/ui/use-toast"
 import { LoadingButton } from '@/components/ui/loading-button';
+import { useAuth } from '@/hooks/useUserData';
 
 
 
@@ -44,6 +45,8 @@ type LoginFormValues = z.infer<typeof loginFormSchema>;
 
 
 export default function Login() {
+  const { setUserData, getUserData, clearUserData } = useAuth();
+
   const router = useRouter()
   const [loginError, setLoginError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -67,23 +70,31 @@ export default function Login() {
         description: "Account logged in successfully!",
         variant: "default",
       });
+      
+      setUserData(response);
       router.push('/');
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const errorMessage = error || 'Login failed';
-        console.log('Error:', errorMessage);
-        toast({
-          title: "Error",
-          description: "error",
-          variant: "destructive",
-        });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        try {
+          const errorDetails = JSON.parse(error.message);
+          const message = Array.isArray(errorDetails.message) ? errorDetails.message.join(", ") : errorDetails.message;
+          toast({
+            title: "Error",
+            description: message || 'Failed to create an account',
+            variant: "destructive",
+          });
+        } catch (jsonError) {
+          toast({
+            title: "Error",
+            description: 'Failed to create login',
+            variant: "destructive",
+          });
+        }
       } else {
-        console.error('Unexpected error:', error);
-        setLoginError('An unexpected error occurred');
         toast({
           title: "Error",
-          variant: "destructive",
           description: 'An unexpected error occurred',
+          variant: "destructive",
         });
       }
     } finally {

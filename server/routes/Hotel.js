@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createHotelController, getHotelsController } = require('../controllers/Hotel');
+const { createHotelController, getHotelsController, deleteHotelController, createRoomController } = require('../controllers/Hotel');
 
 /**
  * @swagger
@@ -189,6 +189,40 @@ router.post('/create', createHotelController);
 
 // GET : Get all hotels
 router.get('/get', getHotelsController);
+
+
+/**
+ * @swagger
+ * /api/hotel/delete/{id}:
+ *   delete:
+ *     summary: Delete a hotel
+ *     tags: [Hotel]
+ *     description: Deletes a hotel by its ID.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: MongoDB ObjectId of the hotel to delete.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Hotel deleted successfully. Returns the deleted hotel data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Hotel'
+ *       400:
+ *         description: Invalid hotel ID.
+ *       404:
+ *         description: Hotel not found.
+ *       500:
+ *         description: Internal server error.
+ */
+
+// DELETE: Delete a hotel
+router.delete('/delete/:id', deleteHotelController);
+
 
 
 module.exports = router;

@@ -4,24 +4,33 @@ import { CardContent, Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 
 interface Hotel {
-    id: number;
-    name: string;
-    imageUrl: string;
-    rating: number;
-    location: string;
-    description: string;
-    price: number;
-    amenities: string[];
-  }
-  interface HotelCardProps {
-    hotel: Hotel;
-  }
-  interface AmenitiesIcons {
-    [key: string]: React.ElementType; 
-  }
-  
+  _id: string;
+  name: string;
+  address: string;
+  city: string;
+  longitude: string;
+  latitude: string;
+  cheapestPrice: number;
+  description: string;
+  rating: number;
+  amenities: string[];
+  images: string[];
+  rooms: any[];
+  cityId: string;
+  user: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+interface HotelCardProps {
+  hotel: Hotel;
+}
+interface AmenitiesIcons {
+  [key: string]: React.ElementType;
+}
 
-  export default function HotelCard({ hotel }: HotelCardProps) {
+
+export default function HotelCard({ hotel }: HotelCardProps) {
 
   const amenitiesIcons: AmenitiesIcons = {
     wifi: Wifi,
@@ -31,14 +40,16 @@ interface Hotel {
     Waves: Waves,
     UtensilsCrossed: UtensilsCrossed
   };
-
+  const randomImage = hotel.images.length > 0 ?
+    hotel.images[Math.floor(Math.random() * hotel.images.length)] :
+    "/placeholder.svg";
   return (
     <Card className="group">
-      
+
       <img
         alt="Hotel image"
         className="rounded-t-lg object-cover w-full aspect-[4/3] group-hover:opacity-80 transition-opacity"
-        src={hotel.imageUrl || "/placeholder.svg"}
+        src={randomImage}
         height={300}
         width={400}
       />
@@ -51,7 +62,7 @@ interface Hotel {
             ))}
           </div>
         </div>
-        <p className="text-sm text-gray-500 dark:text-gray-400">{hotel.location}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{hotel.city}</p>
         <p className="text-sm line-clamp-2">{hotel.description}</p>
         <div className="flex items-center gap-2">
           {hotel.amenities.map(amenity => {
@@ -60,7 +71,7 @@ interface Hotel {
           })}
         </div>
         <div className="flex justify-between items-center">
-          <div className="text-lg font-semibold">${hotel.price}/night</div>
+          <div className="text-lg font-semibold">${hotel.cheapestPrice}/night</div>
           <Button size="sm">Book Now</Button>
         </div>
       </CardContent>

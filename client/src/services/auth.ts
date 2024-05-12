@@ -1,13 +1,23 @@
 
 import axios, { AxiosError } from 'axios';
 
+interface UserData {
+    _id: string;
+    username: string;
+    password: string;
+    email: string;
+    role: string;
+    name: string;
+    createdAt: string;
+    updatedAt: string;
+  }
+
+  
+
 interface LoginResponse {
+    message: string;
+    user: UserData;
     token: string;
-    user: {
-        id: number;
-        name: string;
-        email: string;
-    };
 }
 
 interface LoginCredentials {
