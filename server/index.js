@@ -7,6 +7,7 @@ const flightRoutes = require('./routes/Flight');
 const hotelRoutes = require('./routes/Hotel');
 const config = require('./config');
 const authenticateJWT = require('./middlewares/authenticateJWT');
+const cors = require('cors'); 
 
 const app = express();
 
@@ -40,7 +41,8 @@ const swaggerOptions = {
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 app.use(express.json());
-// Apply globally with exceptions
+app.use(cors()); // Enable CORS for all routes
+
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/auth', authRoutes);
@@ -48,5 +50,5 @@ app.use('/api/flight', flightRoutes);
 app.use('/api/hotel', hotelRoutes);
 
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
