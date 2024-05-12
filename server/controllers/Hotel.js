@@ -1,34 +1,40 @@
-const { hotelSearch, getHotelOfferDetails } = require('../services/Hotels');
+const { getCities, createHotel, getHotels } = require('../services/Hotels');
 
 
-
-const getHotelController = async (req, res) => {
+const getCitiesController = async (req, res) => {
     try {
-        const searchParams = {
-            cityCode: req.query.cityCode,
-        };
+        const cities = await getCities();
+        res.json(cities);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
 
-        const hotels = await hotelSearch(searchParams);
+const createHotelController = async (req, res) => {
+    try {
+        const hotelData = req.body;
+        const newHotel = await createHotel(hotelData);
+        res.json(newHotel);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+
+const getHotelsController = async (req, res) => {
+    try {
+        const hotels = await getHotels();
         res.json(hotels);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-};
+}   
 
-const getHotelOfferDetailsController = async (req, res) => {
-    try {
-        const { offerId } = req.params;
-        const offerDetails = await getHotelOfferDetails(offerId);
-        res.json(offerDetails);
-    } catch (error) {
-        console.error(`Error in getHotelOfferDetailsController: ${error.message}`);
-        res.status(500).json({ error: error.message });
-    }
-};
 
 module.exports = {
-    getHotelController,
-    getHotelOfferDetailsController,
+    getCitiesController,
+    createHotelController,
+    getHotelsController
 };
 
 

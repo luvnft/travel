@@ -7,8 +7,10 @@ const jwtExpiresIn = 86400;
 
 const register = async (userData) => {
     const userExists = await User.findOne({ username: userData.username });
-    if (userExists) {
-        throw new Error('Username already exists');
+    const emailExists = await User.findOne({ email: userData.email });
+
+    if (userExists || emailExists) {
+        throw new Error('User already exists');
     }
 
     const hashedPassword = await bcrypt.hash(userData.password, 10);

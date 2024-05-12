@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getHotelController, getHotelOfferDetailsController } = require('../controllers/Hotel');
+const { createHotelController, getHotelsController } = require('../controllers/Hotel');
 
 /**
  * @swagger
@@ -9,128 +9,186 @@ const { getHotelController, getHotelOfferDetailsController } = require('../contr
  *   description: Hotel related endpoints
  */
 
+
+/**
+ * @swagger
+ * /api/hotel/create:
+ *   post:
+ *     summary: Create a new hotel
+ *     tags: [Hotel]
+ *     description: Creates a new hotel with the provided data.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - address
+ *               - city
+ *               - description
+ *               - cityId
+ *               - user
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Name of the hotel.
+ *               address:
+ *                 type: string
+ *                 description: Full address of the hotel.
+ *               city:
+ *                 type: string
+ *                 description: City where the hotel is located.
+ *               longitude:
+ *                 type: string
+ *                 description: Longitude of the hotel's location.
+ *               latitude:
+ *                 type: string
+ *                 description: Latitude of the hotel's location.
+ *               cheapestPrice:
+ *                 type: number
+ *                 description: The lowest price available at the hotel.
+ *               description:
+ *                 type: string
+ *                 description: Detailed description of the hotel.
+ *               rating:
+ *                 type: number
+ *                 minimum: 1
+ *                 maximum: 5
+ *                 description: Rating of the hotel from 1 to 5.
+ *               amenities:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: List of amenities available at the hotel.
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: URLs of images of the hotel.
+ *               rooms:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: List of room IDs associated with the hotel.
+ *               cityId:
+ *                 type: string
+ *                 description: The MongoDB ObjectId for the city document associated with this hotel.
+ *               user:
+ *                 type: string
+ *                 description: The MongoDB ObjectId for the user who is managing this hotel.
+ *     responses:
+ *       201:
+ *         description: Hotel created successfully. Returns the newly created hotel data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Hotel'
+ *       400:
+ *         description: Invalid request data.
+ *       500:
+ *         description: Server error.
+ */
+
+// POST: Create a new hotel
+router.post('/create', createHotelController);
+
 /**
  * @swagger
  * /api/hotel/get:
  *   get:
+ *     summary: Retrieve all hotels
  *     tags: [Hotel]
- *     summary: Search for hotel offers
- *     description: Fetches hotel offers based on the provided city code and optional search criteria.
- *     parameters:
- *       - in: query
- *         name: cityCode
- *         required: true
- *         description: The city code to search for hotels.
- *         schema:
- *           type: string
+ *     description: Fetches a list of all hotels available in the database.
  *     responses:
  *       200:
- *         description: An array of hotel offers.
+ *         description: A list of hotels.
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 type: object
- *                 properties:
- *                   hotel:
- *                     type: object
- *                     properties:
- *                       name:
- *                         type: string
- *                       address:
- *                         type: string
- *                       starRating:
- *                         type: string
- *                   offers:
- *                     type: array
- *                     items:
- *                       type: object
- *                       properties:
- *                         price:
- *                           type: string
- *                         roomType:
- *                           type: string
- *       400:
- *         description: Bad request, such as missing or invalid query parameters.
+ *                 $ref: '#/components/schemas/Hotel'
  *       500:
  *         description: Internal server error
- */
-
-router.get('/get', getHotelController);
-
-
-/**
- * @swagger
- * /api/hotel/offer/{offerId}:
- *   get:
- *     tags: [Hotel]
- *     summary: Fetch specific hotel offer details
- *     description: Retrieves details for a specific hotel offer based on its unique offer ID.
- *     parameters:
- *       - in: path
- *         name: offerId
- *         required: true
- *         description: Unique identifier for the hotel offer.
- *         schema:
+ * components:
+ *   schemas:
+ *     Hotel:
+ *       type: object
+ *       required:
+ *         - name
+ *         - address
+ *         - city
+ *         - description
+ *         - cityId
+ *         - user
+ *       properties:
+ *         name:
  *           type: string
- *     responses:
- *       200:
- *         description: Detailed information about the hotel offer.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 hotel:
- *                   type: object
- *                   properties:
- *                     name:
- *                       type: string
- *                     address:
- *                       type: object
- *                       properties:
- *                         lines:
- *                           type: array
- *                           items:
- *                             type: string
- *                         city:
- *                           type: string
- *                         postalCode:
- *                           type: string
- *                         country:
- *                           type: string
- *                     geoCode:
- *                       type: object
- *                       properties:
- *                         latitude:
- *                           type: number
- *                         longitude:
- *                           type: number
- *                 offers:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       price:
- *                         type: object
- *                         properties:
- *                           currency:
- *                             type: string
- *                           total:
- *                             type: string
- *                       roomType:
- *                         type: string
- *                       rateType:
- *                         type: string
- *       400:
- *         description: Bad request, such as missing or invalid offerId.
- *       404:
- *         description: Offer not found for the given offerId.
- *       500:
- *         description: Internal server error
+ *           description: Name of the hotel.
+ *         address:
+ *           type: string
+ *           description: Full address of the hotel.
+ *         city:
+ *           type: string
+ *           description: City where the hotel is located.
+ *         longitude:
+ *           type: string
+ *           description: Longitude of the hotel's location.
+ *         latitude:
+ *           type: string
+ *           description: Latitude of the hotel's location.
+ *         cheapestPrice:
+ *           type: number
+ *           description: The lowest price available at the hotel.
+ *         description:
+ *           type: string
+ *           description: Detailed description of the hotel.
+ *         rating:
+ *           type: number
+ *           minimum: 1
+ *           maximum: 5
+ *           description: Rating of the hotel from 1 to 5.
+ *         amenities:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: List of amenities available at the hotel.
+ *         images:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: URLs of images of the hotel.
+ *         rooms:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Room'
+ *         cityId:
+ *           type: string
+ *           description: The MongoDB ObjectId for the city document associated with this hotel.
+ *         user:
+ *           type: string
+ *           description: The MongoDB ObjectId for the user who is managing this hotel.
+ *     Room:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: MongoDB ObjectId of the room.
+ *         number:
+ *           type: string
+ *           description: Room number or identifier.
+ *         capacity:
+ *           type: number
+ *           description: The maximum number of guests for the room.
+ *         price:
+ *           type: number
+ *           description: Price per night for the room.
  */
 
-router.get('/offer/:offerId', getHotelOfferDetailsController);
+// GET : Get all hotels
+router.get('/get', getHotelsController);
+
 
 module.exports = router;

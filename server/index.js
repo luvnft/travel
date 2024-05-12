@@ -5,15 +5,30 @@ const swaggerJsdoc = require('swagger-jsdoc');
 const authRoutes = require('./routes/Auth');
 const flightRoutes = require('./routes/Flight');
 const hotelRoutes = require('./routes/Hotel');
+const citiesRoutes = require('./routes/Cities');
+const imageRoutes = require('./routes/Image');
 const config = require('./config');
 const authenticateJWT = require('./middlewares/authenticateJWT');
 const cors = require('cors'); 
+require('dotenv').config();
 
 const app = express();
 
 mongoose.connect(config.mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB Connected'))
     .catch(err => console.log(err));
+
+const citiesData = require('./data/cities.json');
+
+City.insertMany(citiesData)
+    .then(res => {
+        console.log("Data inserted")  
+        mongoose.connection.close();
+    })
+    .catch(e => {
+        console.log(e)     
+        mongoose.connection.close();
+    });
 
 const swaggerOptions = {
     definition: {
@@ -47,7 +62,9 @@ app.use(cors()); // Enable CORS for all routes
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api/auth', authRoutes);
 app.use('/api/flight', flightRoutes);
-app.use('/api/hotel', hotelRoutes);
+app.use('/api/city', citiesRoutes);
+app.use('/api/image', imageRoutes);
+ app.use('/api/hotel', hotelRoutes);
 
 
 const PORT = process.env.PORT || 8080;

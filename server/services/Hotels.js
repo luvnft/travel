@@ -1,52 +1,38 @@
-const Amadeus = require('amadeus');
+const Hotel = require('../models/Hotel');
+const City = require('../models/City');
 
-const amadeus = new Amadeus({
-  clientId: 'IRzZGIP6Cpofb1JALx9idthdO6UZJmH7',
-  clientSecret: '6ajvPXZG4uOrgg24'
-});
-
-
-async function hotelSearch({ cityCode }) {
-  try {
-    if (!cityCode) {
-      throw new Error("Missing required search parameters.");
+const getCities = async () => {
+    try {
+        const cities = await City.find();
+        return cities;
+    } catch (error) {
+        throw new Error('Failed to fetch cities: ' + error.message);
     }
-
-    const response = await amadeus.referenceData.locations.hotels.byCity.get({
-      cityCode,
-    });
-
-    return JSON.parse(response.body);
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function getHotelOfferDetails(offerId) {
-  try {
-    if (!offerId) {
-      throw new Error("Offer ID is required to fetch hotel offer details.");
-    }
-
-    const response = await amadeus.shopping.hotelOffersSearch.get(
-      {
-        hotelIds: 'RTPAR001',
-        adults: '2'
-      }
-    );
-
-    return JSON.parse(response.body);
-  } catch (error) {
-    console.error(`Error fetching hotel offer details for offer ID ${offerId}:`, error);
-    throw error; 
-  }
-}
-
-
-module.exports = {
-  hotelSearch,
-  getHotelOfferDetails,
-
 };
 
 
+const createHotel = async (hotelData) => {
+    const newHotel = new Hotel(hotelData);
+    await newHotel.save();
+    return newHotel;
+};
+
+const getHotels = async () => {
+    const hotels = await Hotel.find();
+    return hotels;
+};
+
+const getHotelById = async (id) => {
+    const hotel = await Hotel.findById(id);
+    if (!hotel) {
+        throw new Error('Hotel not found');
+    }
+    return hotel;
+};
+
+module.exports = {
+    createHotel,
+    getHotels,
+    getHotelById,
+    getCities
+};
