@@ -34,8 +34,8 @@ export const getHotelList = async (): Promise<Hotel[]> => {
 
     try {
         const response = await axios.get<ApiResponse<Hotel[]>>(url);
-        if (response.data) {
-            return response.data; 
+        if (response.data && response.data.data) {
+            return response.data.data; 
         }
         throw new Error('No data received');
     } catch (error) {
