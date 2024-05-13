@@ -29,7 +29,7 @@ export const getCities = async (): Promise<City[]> => {
     const url = `${process.env.NEXT_PUBLIC_API_URL}/city/get`;  
 
     try {
-        const response = await axios.get<ApiResponse<City[]>>(url);
+        const response = await axios.get<City[]>(url);
         if (response.data) {
             return response.data; 
         }
