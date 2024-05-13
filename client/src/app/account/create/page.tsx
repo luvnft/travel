@@ -77,7 +77,7 @@ export default function CreateHotel() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="amenities">Amenities</Label>
-                            <Select id="amenities" multiple>
+                            <Select >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select amenities" />
                                 </SelectTrigger>

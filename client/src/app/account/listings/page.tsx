@@ -123,14 +123,14 @@ export default function ListingsPage() {
                             <p className="text-sm text-gray-500">Current month</p>
                         </CardContent>
                         <CardFooter className="p-4">
-                            <Badge variant="success">Healthy</Badge>
+                            <Badge>Healthy</Badge>
                         </CardFooter>
                     </Card>
                 </div>
 
                 <div className="flex items-center justify-end my-4">
                     <div className="mt-4">
-                        <Button variant="solid" className="bg-blue-500 hover:bg-blue-600 text-white">Add Hotel</Button>
+                        <Button  className="bg-blue-500 hover:bg-blue-600 text-white">Add Hotel</Button>
                     </div>
                 </div>
 
