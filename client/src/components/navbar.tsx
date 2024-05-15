@@ -15,6 +15,8 @@ export default function Navbar() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
 
+    //test
+
     useEffect(() => {
         const userData = getUserData();
         setIsLoggedIn(!!userData);
