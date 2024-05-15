@@ -31,7 +31,6 @@ import Navbar from '@/components/navbar';
 import HotelAmenities from '@/components/hotel/HotelAmenities';
 import { CityCombobox } from '@/components/hotel/CitiesDropdown';
 import { City } from "@/services/cities";
-import MyMap from '@/components/Map';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { createHotel, CreateHotelData } from '@/services/hotel';
 import { uploadImage } from '@/services/image';
@@ -42,6 +41,9 @@ import { useAuth } from '@/hooks/useUserData';
 import Loading from '@/components/Loading';
 import { useToast } from "@/components/ui/use-toast"
 import { ToastAction } from "@/components/ui/toast"
+import dynamic from 'next/dynamic';
+
+const MyMap = dynamic(() => import('@/components/Map'), { ssr: false });
 
 const amenities = [
   { name: 'wifi', Icon: WifiIcon },
