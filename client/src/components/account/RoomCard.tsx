@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Trash } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import Link from 'next/link';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,16 +14,15 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-interface ListingCardProps {
-  id: string;
-  title: string;
-  pricePerNight: number;
+interface RoomCardProps {
+  type: string;
+  price: number;
   description: string;
   imageUrl: string;
   loading?: boolean;
 }
 
-function SkeletonCard() {
+function SkeletonRoomCard() {
   return (
     <div className="flex items-start gap-4 rounded-lg border border-gray-200 p-4 dark:border-gray-800 my-2">
       <Skeleton className="aspect-video rounded-lg object-cover h-[120px] w-[160px]" />
@@ -43,17 +41,17 @@ function SkeletonCard() {
   );
 }
 
-export default function ListingCard({ id, title, pricePerNight, description, imageUrl, loading }: ListingCardProps) {
+export default function RoomCard({ type, price, description, imageUrl, loading }: RoomCardProps) {
   const [showDialog, setShowDialog] = useState(false);
 
   if (loading) {
-    return <SkeletonCard />;
+    return <SkeletonRoomCard />;
   }
 
   return (
     <div className="flex items-start gap-4 rounded-lg border border-gray-200 p-4 dark:border-gray-800 my-2">
       <img
-        alt="Hotel Image"
+        alt="Room Image"
         className="aspect-video rounded-lg object-cover"
         height={120}
         src={imageUrl}
@@ -62,8 +60,8 @@ export default function ListingCard({ id, title, pricePerNight, description, ima
       <div className="flex-1">
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="font-medium">{title}</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">${pricePerNight} / night</p>
+            <h3 className="font-medium">{type}</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">${price} / night</p>
           </div>
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -81,7 +79,7 @@ export default function ListingCard({ id, title, pricePerNight, description, ima
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete {title}.
+                  This action cannot be undone. This will permanently delete the {type} room.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -99,11 +97,6 @@ export default function ListingCard({ id, title, pricePerNight, description, ima
         <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
           {description}
         </p>
-        <div className="mt-2">
-        <Link href={`/account/rooms/${id}`}>
-          <Button variant="secondary" >View Room</Button>
-        </Link>
-        </div>
       </div>
     </div>
   );

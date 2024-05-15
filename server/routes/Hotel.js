@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createHotelController, getHotelsController, deleteHotelController, createRoomController } = require('../controllers/Hotel');
+const { createHotelController, getHotelsController, deleteHotelController,  getHotelByUserController } = require('../controllers/Hotel');
 
 /**
  * @swagger
@@ -224,5 +224,35 @@ router.get('/get', getHotelsController);
 router.delete('/delete/:id', deleteHotelController);
 
 
+/**
+ * @swagger
+ * /api/hotel/user/{userId}:
+ *   get:
+ *     summary: Retrieve hotels by user ID
+ *     tags: [Hotel]
+ *     description: Fetches a list of hotels associated with a specific user.
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         description: MongoDB ObjectId of the user whose hotels to fetch.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: A list of hotels associated with the user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Hotel'
+ *       404:
+ *         description: No hotels found for the user.
+ *       500:
+ *         description: Internal server error.
+ */
+// GET: Get hotels by user ID
+router.get('/user/:userId', getHotelByUserController);
 
 module.exports = router;

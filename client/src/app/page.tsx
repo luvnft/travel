@@ -1,6 +1,6 @@
 
 import FlightSearchCard from "@/components/flight/FlightSearch";
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/Navbar";
 import HeroSectionGradientBackground from "@/components/ui/hero";
 
 export default function Home() {

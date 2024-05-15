@@ -1,48 +1,23 @@
-import React from 'react';
-import Navbar from '@/components/navbar';
+"use client";
+
+import React, { useEffect, useState } from 'react';
+import Navbar from '@/components/Navbar';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { ListFilter, Users2, CreditCard, ShoppingCart, LineChart } from "lucide-react";
+import { Users2, CreditCard, ShoppingCart, LineChart } from "lucide-react";
 import ListingCard from "@/components/account/ListingCard";
-import { Separator } from "@/components/ui/separator"
-
-
+import { Separator } from "@/components/ui/separator";
+import Link from 'next/link';
+import { getHotelsByUserId, Hotel } from '@/services/hotel';
+import { useAuth } from '@/hooks/useUserData';
+import { truncateText } from '@/lib/utils';
 
 export default function ListingsPage() {
-    const listings = [
-        {
-            title: "The Ritz-Carlton, New York",
-            pricePerNight: 399,
-            description: "Experience luxury and sophistication at The Ritz-Carlton, New York. Situated in the heart of the city, this iconic hotel offers breathtaking views, world-class amenities, and impeccable service.",
-            imageUrl: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/230466222.jpg?k=c9221d86295955a7f13b424b6642d9cb1e6cc91838b3db36bcb8472635f2fb28&o=&hp=1"
-        },
-        {
-            title: "The Ritz-Carlton, New York",
-            pricePerNight: 399,
-            description: "Experience luxury and sophistication at The Ritz-Carlton, New York. Situated in the heart of the city, this iconic hotel offers breathtaking views, world-class amenities, and impeccable service.",
-            imageUrl: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/230466222.jpg?k=c9221d86295955a7f13b424b6642d9cb1e6cc91838b3db36bcb8472635f2fb28&o=&hp=1"
-        },
-        {
-            title: "The Ritz-Carlton, New York",
-            pricePerNight: 399,
-            description: "Experience luxury and sophistication at The Ritz-Carlton, New York. Situated in the heart of the city, this iconic hotel offers breathtaking views, world-class amenities, and impeccable service.",
-            imageUrl: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/230466222.jpg?k=c9221d86295955a7f13b424b6642d9cb1e6cc91838b3db36bcb8472635f2fb28&o=&hp=1"
-        },
-        {
-            title: "The Ritz-Carlton, New York",
-            pricePerNight: 399,
-            description: "Experience luxury and sophistication at The Ritz-Carlton, New York. Situated in the heart of the city, this iconic hotel offers breathtaking views, world-class amenities, and impeccable service.",
-            imageUrl: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/230466222.jpg?k=c9221d86295955a7f13b424b6642d9cb1e6cc91838b3db36bcb8472635f2fb28&o=&hp=1"
-        },
-        {
-            title: "The Ritz-Carlton, New York",
-            pricePerNight: 399,
-            description: "Experience luxury and sophistication at The Ritz-Carlton, New York. Situated in the heart of the city, this iconic hotel offers breathtaking views, world-class amenities, and impeccable service.",
-            imageUrl: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/230466222.jpg?k=c9221d86295955a7f13b424b6642d9cb1e6cc91838b3db36bcb8472635f2fb28&o=&hp=1"
-        },
-    ];
+    const [listings, setListings] = useState<Hotel[]>([]);
+    const [loading, setLoading] = useState(true);
+    const { getUserData } = useAuth();
 
     const dashboardData = {
         listingsCount: 14,
@@ -51,17 +26,28 @@ export default function ListingsPage() {
         occupancyRate: 75
     };
 
+    useEffect(() => {
+        const fetchListings = async () => {
+            try {
+                const userId = getUserData()?._id ?? '';
+                const data = await getHotelsByUserId(userId);
+                setListings(data);
+            } catch (error) {
+                console.error("Failed to fetch listings:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchListings();
+    }, []);
 
     return (
-
         <div>
-
             <Navbar />
             <div className="p-8">
-
                 <div className="flex items-center justify-between my-4">
                     <h1 className="text-3xl font-bold">My Listings</h1>
-
                 </div>
                 <Separator orientation="vertical" />
 
@@ -130,21 +116,24 @@ export default function ListingsPage() {
 
                 <div className="flex items-center justify-end my-4">
                     <div className="mt-4">
-                        <Button  className="bg-blue-500 hover:bg-blue-600 text-white">Add Hotel</Button>
+                        <Link href="/account/create">
+                            <Button className="bg-blue-500 hover:bg-blue-600 text-white">Add Hotel</Button>
+                        </Link>
                     </div>
                 </div>
 
                 {listings.map((listing, index) => (
                     <ListingCard
+                        id={listing._id}
+                        loading={loading}
                         key={index}
-                        title={listing.title}
-                        pricePerNight={listing.pricePerNight}
-                        description={listing.description}
-                        imageUrl={listing.imageUrl}
+                        title={listing.name}
+                        pricePerNight={listing.cheapestPrice}
+                        description={truncateText(listing.description, 100)} // Truncate description to 100 characters
+                        imageUrl={listing.images[0]}
                     />
                 ))}
             </div>
         </div>
-
     );
 }

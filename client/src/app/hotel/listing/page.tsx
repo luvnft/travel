@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChangeEvent } from 'react';
-import Navbar from '@/components/navbar';
+import Navbar from '@/components/Navbar';
 import { getHotelList } from '@/services/hotel'; 
 
 

@@ -42,7 +42,17 @@ const deleteHotel = async (id) => {
         throw new Error('Failed to delete hotel: ' + error.message);
     }
 };
-
+const getHotelsByUserId = async (user) => {
+    try {
+        const hotels = await Hotel.find({ user });
+        if (!hotels.length) {
+            throw new Error('No hotels found for this user');
+        }
+        return hotels;
+    } catch (error) {
+        throw new Error('Failed to fetch hotels: ' + error.message);
+    }
+};
 
 
 
@@ -51,5 +61,6 @@ module.exports = {
     getHotels,
     getHotelById,
     getCities,
-    deleteHotel
+    deleteHotel,
+    getHotelsByUserId
 };
