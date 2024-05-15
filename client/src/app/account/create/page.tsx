@@ -1,5 +1,5 @@
 "use client";
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useState, useEffect } from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -267,13 +267,15 @@ export default function CreateHotel() {
                                 {images.length > 0 ? (
                                     images.map(image => (
                                         <CarouselItem key={image.id}>
-                                            <img
-                                                alt="Uploaded image"
-                                                className="rounded-lg w-full aspect-[4/3] object-cover"
-                                                src={URL.createObjectURL(image.file)}
-                                                width={400}
-                                                height={300}
-                                            />
+                                            {typeof window !== 'undefined' && (
+                                                <img
+                                                    alt="Uploaded image"
+                                                    className="rounded-lg w-full aspect-[4/3] object-cover"
+                                                    src={URL.createObjectURL(image.file)}
+                                                    width={400}
+                                                    height={300}
+                                                />
+                                            )}
                                         </CarouselItem>
                                     ))
                                 ) : (
