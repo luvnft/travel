@@ -27,7 +27,7 @@ import {
     Eraser as RemoveIcon,
     Check as CheckIcon
 } from 'lucide-react';
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/navbar';
 import HotelAmenities from '@/components/hotel/HotelAmenities';
 import { CityCombobox } from '@/components/hotel/CitiesDropdown';
 import { City } from "@/services/cities";

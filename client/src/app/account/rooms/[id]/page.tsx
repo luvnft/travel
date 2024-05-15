@@ -6,7 +6,7 @@ import RoomCard from '@/components/account/RoomCard';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/navbar';
 import {
   DropdownMenu,
   DropdownMenuContent,
