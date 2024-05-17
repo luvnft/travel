@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 interface RoomCardProps {
+  name: string;
   type: string;
   price: number;
   description: string;
@@ -41,7 +42,7 @@ function SkeletonRoomCard() {
   );
 }
 
-export default function RoomCard({ type, price, description, imageUrl, loading }: RoomCardProps) {
+export default function RoomCard({ name, type, price, description, imageUrl, loading }: RoomCardProps) {
   const [showDialog, setShowDialog] = useState(false);
 
   if (loading) {
@@ -60,7 +61,8 @@ export default function RoomCard({ type, price, description, imageUrl, loading }
       <div className="flex-1">
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="font-medium">{type}</h3>
+            <h3 className="font-medium">{name}</h3>
+            <h5 className="font-medium text-gray-300">{type}</h5>
             <p className="text-sm text-gray-500 dark:text-gray-400">${price} / night</p>
           </div>
           <AlertDialog>

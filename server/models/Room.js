@@ -8,6 +8,11 @@ const roomSchema = new Schema({
         ref: 'Hotel',
         required: true,
     },
+    name: {
+        type: String,
+        required: true,
+        trim: true,
+    },
     type: {
         type: String,
         required: true,
@@ -23,7 +28,7 @@ const roomSchema = new Schema({
     },
     amenities: [{
         type: String,
-        enum: ['wifi', 'air conditioning', 'mini-bar', 'room safe', 'television', 'balcony']
+        enum: ['wifi', 'air conditioning', 'mini-bar', 'room safe', 'television', 'room service']
     }],
     images: [String],
     description: {

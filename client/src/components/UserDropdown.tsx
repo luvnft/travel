@@ -2,19 +2,20 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { User, Settings, LogOut } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { useRouter } from 'next/navigation';
-
-
-
-
+import { useAuth } from '@/hooks/useUserData';
 
 const UserDropdown = () => {
     const router = useRouter();
+    const { clearUserData } = useAuth();
 
-
-    const handleNavigate = (path : any) => {
+    const handleNavigate = (path: string) => {
         router.push(path);
     };
 
+    const handleLogout = () => {
+        clearUserData();
+        router.push('/');
+    };
 
     return (
         <DropdownMenu>
@@ -25,20 +26,20 @@ const UserDropdown = () => {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56 bg-background shadow-lg rounded-md p-1">
-                <DropdownMenuLabel className="px-2 py-1 text-gray-700">My Account</DropdownMenuLabel>
+                <DropdownMenuLabel className="px-2 py-1">My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="px-2 py-1 hover:bg-gray-100">
+                <DropdownMenuItem className="px-2 py-1 hover:bg-gray-100 hover:text-slate-800">
                     My Bookings
                 </DropdownMenuItem>
-                <DropdownMenuItem className="px-2 py-1 hover:bg-gray-100" onClick={() => handleNavigate('/account/listings')}>
+                <DropdownMenuItem className="px-2 py-1 hover:bg-gray-100 hover:text-slate-800" onClick={() => handleNavigate('/account/listings')}>
                     My Listings
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="px-2 py-1 hover:bg-gray-100">
+                <DropdownMenuItem className="px-2 py-1 hover:bg-gray-100 hover:text-slate-800">
                     <Settings className="mr-2 h-4 w-4" />
                     Settings
                 </DropdownMenuItem>
-                <DropdownMenuItem className="px-2 py-1 hover:bg-gray-100">
+                <DropdownMenuItem className="px-2 py-1 hover:bg-gray-100 hover:text-slate-800" onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
                     Log out
                 </DropdownMenuItem>

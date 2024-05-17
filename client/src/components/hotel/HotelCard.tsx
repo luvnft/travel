@@ -2,6 +2,7 @@ import { Star, Wifi, Wallet, Dumbbell, MapPin, Waves, UtensilsCrossed } from "lu
 import Link from "next/link";
 import { CardContent, Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { useRouter } from "next/navigation";
 
 interface Hotel {
   _id: string;
@@ -40,6 +41,7 @@ export default function HotelCard({ hotel }: HotelCardProps) {
     Waves: Waves,
     UtensilsCrossed: UtensilsCrossed
   };
+  const router = useRouter();
   const randomImage = hotel.images.length > 0 ?
     hotel.images[Math.floor(Math.random() * hotel.images.length)] :
     "/placeholder.svg";
@@ -71,8 +73,10 @@ export default function HotelCard({ hotel }: HotelCardProps) {
           })}
         </div>
         <div className="flex justify-between items-center">
-          <div className="text-lg font-semibold">${hotel.cheapestPrice}/night</div>
+          <div className="text-lg font-semibold">Rs {hotel.cheapestPrice}/night</div>
+          <Link href={`/hotel/${hotel._id}`}>
           <Button size="sm">Book Now</Button>
+          </Link>
         </div>
       </CardContent>
     </Card>

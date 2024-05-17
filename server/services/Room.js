@@ -3,10 +3,12 @@ const Room = require('../models/Room');
 const Inventory = require('../models/Inventory');
 
 const createRoom = async (roomData) => {
-    const { hotelId, type, price, quantity, amenities, images, description } = roomData;
+    const { hotelId, type, price, quantity, amenities, images, description, name
+     } = roomData;
     try {
         const newRoom = new Room({
             hotel: hotelId,
+            name,
             type,
             price,
             quantity,

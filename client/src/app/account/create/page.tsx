@@ -1,5 +1,5 @@
 "use client";
-import React, { ChangeEvent, useState, useEffect } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,7 +42,7 @@ import Loading from '@/components/Loading';
 import { useToast } from "@/components/ui/use-toast"
 import { ToastAction } from "@/components/ui/toast"
 import dynamic from 'next/dynamic';
-
+import Rating from '@/components/Rating';
 const MyMap = dynamic(() => import('@/components/Map'), { ssr: false });
 
 const amenities = [
@@ -78,9 +78,14 @@ export default function CreateHotel() {
     const [loading, setLoading] = useState(false);
     const { setUserData, getUserData, clearUserData } = useAuth();
     const { toast } = useToast();
+    const [rating, setRating] = useState(0);
 
     const handleLocationSelect = (position: [number, number]) => {
       setSelectedPosition(position);
+    };
+
+    const handleRatingSelect = (rating: number) => {
+        setRating(rating);
     };
   
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -144,7 +149,7 @@ export default function CreateHotel() {
                 latitude: selectedPosition[0].toString(),
                 cheapestPrice: 0, 
                 description: data.description,
-                rating: 5,
+                rating: rating,
                 amenities: selectedAmenities,
                 images: uploadedImages,
                 rooms: [],
@@ -210,6 +215,10 @@ export default function CreateHotel() {
                                 {form.formState.errors.city && (
                                     <p className="text-red-500 text-sm">{form.formState.errors.city.message}</p>
                                 )}
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="rating">Rating</Label>
+                                <Rating onRatingSelect={handleRatingSelect} />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="amenities">Amenities</Label>

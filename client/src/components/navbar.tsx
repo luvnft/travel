@@ -67,14 +67,14 @@ export default function Navbar() {
                                 <UserDropdown />
                             </div>
                         ) : (
-                            <ul className="flex flex-col md:flex-row md:space-x-6 md:mt-0 md:text-sm md:font-medium">
+                            <ul className="flex flex-col mx-1 md:flex-row md:space-x-6 md:mt-0 md:text-sm md:font-medium">
                                 <li>
-                                    <Link href="/auth/signup" passHref className="block py-2 px-4 hover:bg-primary-foreground rounded-sm">
+                                    <Link href="/auth/signup" passHref className="block py-2 px-2 hover:bg-primary-foreground rounded-sm">
                                         Sign Up
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link href="/auth/login" passHref className="block py-2 px-4 hover:bg-primary-foreground rounded-sm">
+                                    <Link href="/auth/login" passHref className="block py-2 px-2 mr-1 hover:bg-primary-foreground rounded-sm">
                                         Login
                                     </Link>
                                 </li>
@@ -89,3 +89,5 @@ export default function Navbar() {
         </div>
     );
 }
+
+

@@ -17,6 +17,7 @@ const { createRoomController, getRoomsController } = require('../controllers/Roo
  *           schema:
  *             type: object
  *             required:
+ *               - name
  *               - hotelId
  *               - type
  *               - price
@@ -24,6 +25,9 @@ const { createRoomController, getRoomsController } = require('../controllers/Roo
  *               - amenities
  *               - description
  *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Name of the room.
  *               hotelId:
  *                 type: string
  *                 description: The MongoDB ObjectId for the hotel.

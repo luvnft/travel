@@ -2,6 +2,7 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
 
 export interface Room {
+    name: string;
     _id: string;
     hotel: string;
     type: string;
@@ -16,6 +17,7 @@ export interface Room {
 }
 export interface CreateRoomData {
     hotelId: string;
+    name: string;
     type: 'single' | 'double' | 'suite' | 'deluxe' | 'presidential';
     price: number;
     quantity: number;

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ChangeEvent } from 'react';
 import Navbar from '@/components/navbar';
 import { getHotelList } from '@/services/hotel'; 
-
+import { useRouter } from 'next/navigation';
 
 
 export interface Hotel {
@@ -40,8 +40,10 @@ export default function HotelListingPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
+    const router = useRouter();
 
 
+    
     useEffect(() => {
         const fetchHotels = async () => {
             setIsLoading(true);

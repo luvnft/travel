@@ -1,13 +1,11 @@
-import { z } from 'zod';
+import * as z from "zod";
 
 export const createRoomSchema = z.object({
-  hotelId: z.string().nonempty("Hotel ID is required"),
-  type: z.enum(['single', 'double', 'suite', 'deluxe', 'presidential']),
-  price: z.number().min(0, "Price must be at least 0"),
-  quantity: z.number().min(1, "Quantity must be at least 1"),
-  amenities: z.array(z.enum(['wifi', 'air conditioning', 'mini-bar', 'room safe', 'television', 'balcony'])),
-  description: z.string().nonempty("Description is required"),
-  images: z.array(z.string()),
+    name: z.string().nonempty("Room name is required"),
+    description: z.string().nonempty("Description is required"),
+    price: z.preprocess((val) => Number(val), z.number().positive("Price must be a positive number")),
+    quantity: z.preprocess((val) => Number(val), z.number().positive("Quantity must be a positive number").int("Quantity must be an integer")),
+    type: z.enum(['single', 'double', 'suite', 'deluxe', 'presidential']),
 });
 
 export type CreateRoomFormValues = z.infer<typeof createRoomSchema>;
