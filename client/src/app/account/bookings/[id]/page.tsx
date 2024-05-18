@@ -25,7 +25,7 @@ import { Button } from '@/components/ui/button';
 import Navbar from '@/components/navbar';
 import { Separator } from '@/components/ui/separator';
 import { useParams } from 'next/navigation';
-import ErrorCard from '@/app/ErrorCard';
+import ErrorCard from '@/components/ErrorCard';
 
 
 const BookingsList: React.FC = () => {
