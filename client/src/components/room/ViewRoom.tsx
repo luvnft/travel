@@ -83,10 +83,7 @@ const RoomView: React.FC<RoomViewProps> = ({ room, onCounterChange }) => {
   };
 
   return (
-    <Card className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto p-4 lg:px-6 sm:py-8 md:py-10">
-      <div className="md:col-span-2 text-center mb-4">
-        <h1 className="text-3xl font-bold">Choose Your Rooms</h1>
-      </div>
+    <Card className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto my-2 p-4 lg:px-6 sm:py-8 md:py-10">
       <div className="grid gap-4">
         <Carousel className="rounded-lg overflow-hidden">
           <CarouselContent>
@@ -106,7 +103,7 @@ const RoomView: React.FC<RoomViewProps> = ({ room, onCounterChange }) => {
                   alt="Placeholder Image"
                   className="aspect-[4/3] object-cover"
                   height={600}
-                  src="/placeholder.svg"
+                  src="https://placehold.co/600x400"
                   width={800}
                 />
               </CarouselItem>

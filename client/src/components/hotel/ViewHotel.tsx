@@ -67,7 +67,7 @@ const Component: React.FC<HotelProps> = ({ hotel }) => {
                   alt="Placeholder Image"
                   className="aspect-video object-cover"
                   height={600}
-                  src="/placeholder.svg"
+                  src="https://placehold.co/600x400"
                   width={800}
                 />
               </CarouselItem>

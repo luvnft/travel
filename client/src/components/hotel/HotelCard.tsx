@@ -44,7 +44,7 @@ export default function HotelCard({ hotel }: HotelCardProps) {
   const router = useRouter();
   const randomImage = hotel.images.length > 0 ?
     hotel.images[Math.floor(Math.random() * hotel.images.length)] :
-    "/placeholder.svg";
+    "https://placehold.co/600x400";
   return (
     <Card className="group">
 

@@ -17,6 +17,8 @@ const UserDropdown = () => {
         router.push('/');
     };
 
+
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -28,7 +30,7 @@ const UserDropdown = () => {
             <DropdownMenuContent className="w-56 bg-background shadow-lg rounded-md p-1">
                 <DropdownMenuLabel className="px-2 py-1">My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="px-2 py-1 hover:bg-gray-100 hover:text-slate-800">
+                <DropdownMenuItem className="px-2 py-1 hover:bg-gray-100 hover:text-slate-800" onClick={() => handleNavigate('/account/bookings')}>
                     My Bookings
                 </DropdownMenuItem>
                 <DropdownMenuItem className="px-2 py-1 hover:bg-gray-100 hover:text-slate-800" onClick={() => handleNavigate('/account/listings')}>

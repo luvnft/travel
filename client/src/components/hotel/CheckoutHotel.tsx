@@ -1,20 +1,24 @@
 import React from 'react';
 import { CardTitle, CardDescription, CardHeader, CardContent, CardFooter, Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
+import { LoadingButton } from "@/components/ui/loading-button";
 
 interface CheckoutHotelProps {
+  hotelId: string;
   hotelName: string;
   hotelPicture: string;
   selectedRooms: {
+    roomId: string;
     roomName: string;
     roomType: string;
     roomPrice: number;
     roomCount: number;
   }[];
+  onCheckout: (total: number) => void;
+  loading: boolean; // Add loading prop
 }
 
-const CheckoutHotel: React.FC<CheckoutHotelProps> = ({ hotelName, hotelPicture, selectedRooms }) => {
+const CheckoutHotel: React.FC<CheckoutHotelProps> = ({ hotelName, hotelPicture, hotelId, selectedRooms, onCheckout, loading }) => {
   const total = selectedRooms.reduce((sum, room) => sum + room.roomPrice * room.roomCount, 0).toFixed(2);
 
   return (
@@ -64,7 +68,9 @@ const CheckoutHotel: React.FC<CheckoutHotelProps> = ({ hotelName, hotelPicture, 
           </div>
         </CardContent>
         <CardFooter>
-          <Button className="w-full">Checkout</Button>
+          <LoadingButton className="w-full" loading={loading} onClick={() => onCheckout(parseFloat(total))}>
+            Checkout
+          </LoadingButton>
         </CardFooter>
       </Card>
     </div>

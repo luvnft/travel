@@ -23,18 +23,19 @@ export const useAuth = () => {
     localStorage.setItem('token', loginResponse.token);
   }, []);
 
-  const getUserData = useCallback(() => {
+  const getUserData = useCallback((): UserData | null => {
     const userData = localStorage.getItem('userData');
-    return userData ? JSON.parse(userData) as UserData : null;
+    return userData ? (JSON.parse(userData) as UserData) : null;
   }, []);
 
-  const getToken = useCallback(() => {
+  const getToken = useCallback((): string | null => {
     return localStorage.getItem('token');
   }, []);
 
   const clearUserData = useCallback(() => {
     localStorage.removeItem('userData');
     localStorage.removeItem('token');
+    window.location.reload();
   }, []);
 
   return {

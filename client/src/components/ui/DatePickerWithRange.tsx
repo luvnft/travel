@@ -1,25 +1,32 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { addDays, format } from "date-fns"
-import { DateRange } from "react-day-picker"
+import * as React from "react";
+import { addDays, format } from "date-fns";
+import { DateRange } from "react-day-picker";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
 
-import { cn } from "@/lib/utils"
-import { Calendar } from "@/components/ui/calendar"
+interface DatePickerWithRangeProps {
+  className?: string;
+  onChange: (dates: { startDate: Date; endDate: Date }) => void;
+}
 
-export function DatePickerWithRange({
-  className,
-}: React.HTMLAttributes<HTMLDivElement>) {
+export const DatePickerWithRange: React.FC<DatePickerWithRangeProps> = ({ className, onChange }) => {
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: new Date(),
     to: addDays(new Date(), 7),
-  })
+  });
+
+  React.useEffect(() => {
+    if (date?.from && date?.to) {
+      onChange({ startDate: date.from, endDate: date.to });
+    }
+  }, [date, onChange]);
 
   return (
-
-    <div className="flex flex-col items-center justify-center gap-6 p-2 rounded-lg">
-      <h1 className="text-3xl font-bold">Select your stay dates</h1>
-      <p className="text-base font-bold">
+    <div className={cn("flex flex-col items-center justify-center gap-6 p-1 min-h-screen", className)}>
+      <h1 className="text-3xl font-bold text-center mb-4">Select your stay dates</h1>
+      <p className="text-base font-bold text-center mb-4">
         {date?.from ? (
           date.to ? (
             <>
@@ -32,15 +39,17 @@ export function DatePickerWithRange({
           "Pick a date"
         )}
       </p>
-      <Calendar
-        initialFocus
-        mode="range"
-        defaultMonth={date?.from}
-        selected={date}
-        onSelect={setDate}
-        numberOfMonths={2}
-        className="w-full max-w-[600px] [&_td]:w-10 [&_td]:h-10 [&_th]:w-10 [&_[name=day]]:w-10 [&_[name=day]]:h-10 [&>div]:space-x-0 [&>div]:gap-6"
-      />
+      <div className="flex justify-center w-full">
+        <Calendar
+          initialFocus
+          mode="range"
+          defaultMonth={date?.from}
+          selected={date}
+          onSelect={setDate}
+          numberOfMonths={2}
+   
+        />
+      </div>
     </div>
-  )
-}
+  );
+};

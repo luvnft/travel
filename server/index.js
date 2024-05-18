@@ -6,12 +6,14 @@ const authRoutes = require('./routes/Auth');
 const flightRoutes = require('./routes/Flight');
 const hotelRoutes = require('./routes/Hotel');
 const citiesRoutes = require('./routes/Cities');
+const roomRoutes = require('./routes/Room');
 const imageRoutes = require('./routes/Image');
+const bookingRoutes = require('./routes/Booking');
 const config = require('./config');
 const authenticateJWT = require('./middlewares/authenticateJWT');
 const City = require('./models/City');
 const cors = require('cors');
-const roomRoutes = require('./routes/Room');
+
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -71,6 +73,7 @@ app.use('/api/city', citiesRoutes);
 app.use('/api/image', imageRoutes);
 app.use('/api/hotel', hotelRoutes);
 app.use('/api/room', roomRoutes);
+app.use('/api/booking', bookingRoutes);
 
 
 

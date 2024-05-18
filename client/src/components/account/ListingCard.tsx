@@ -26,8 +26,8 @@ interface ListingCardProps {
 
 function SkeletonCard() {
   return (
-    <div className="flex items-start gap-4 rounded-lg border border-gray-200 p-4 dark:border-gray-800 my-2">
-      <Skeleton className="aspect-video rounded-lg object-cover h-[120px] w-[160px]" />
+    <div className="flex flex-col md:flex-row items-start gap-4 rounded-lg border border-gray-200 p-4 dark:border-gray-800 my-2">
+      <Skeleton className="aspect-video rounded-lg object-cover h-[120px] w-full md:w-[160px]" />
       <div className="flex-1 space-y-3">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
@@ -51,13 +51,11 @@ export default function ListingCard({ id, title, pricePerNight, description, ima
   }
 
   return (
-    <div className="flex items-start gap-4 rounded-lg border border-gray-200 p-4 dark:border-gray-800 my-2">
+    <div className="flex flex-col md:flex-row items-start gap-4 rounded-lg border border-gray-200 p-4 dark:border-gray-800 my-2">
       <img
         alt="Hotel Image"
-        className="aspect-video rounded-lg object-cover"
-        height={120}
+        className="aspect-video rounded-lg object-cover w-full md:w-40 md:h-40"
         src={imageUrl}
-        width={160}
       />
       <div className="flex-1">
         <div className="flex items-start justify-between">
@@ -96,13 +94,16 @@ export default function ListingCard({ id, title, pricePerNight, description, ima
             </AlertDialogContent>
           </AlertDialog>
         </div>
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 break-words">
           {description}
         </p>
-        <div className="mt-2">
-        <Link href={`/account/rooms/${id}`}>
-          <Button variant="secondary" >View Room</Button>
-        </Link>
+        <div className="flex flex-wrap gap-2 mt-8">
+          <Link href={`/account/rooms/${id}`}>
+            <Button variant="secondary">View Room</Button>
+          </Link>
+          <Link href={`/account/bookings/${id}`}>
+            <Button variant="outline">View Bookings</Button>
+          </Link>
         </div>
       </div>
     </div>
