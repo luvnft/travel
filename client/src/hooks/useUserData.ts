@@ -19,23 +19,33 @@ interface LoginResponse {
 
 export const useAuth = () => {
   const setUserData = useCallback((loginResponse: LoginResponse) => {
-    localStorage.setItem('userData', JSON.stringify(loginResponse.user));
-    localStorage.setItem('token', loginResponse.token);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('userData', JSON.stringify(loginResponse.user));
+      localStorage.setItem('token', loginResponse.token);
+    }
   }, []);
 
   const getUserData = useCallback((): UserData | null => {
-    const userData = localStorage.getItem('userData');
-    return userData ? (JSON.parse(userData) as UserData) : null;
+    if (typeof window !== 'undefined') {
+      const userData = localStorage.getItem('userData');
+      return userData ? (JSON.parse(userData) as UserData) : null;
+    }
+    return null;
   }, []);
 
   const getToken = useCallback((): string | null => {
-    return localStorage.getItem('token');
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('token');
+    }
+    return null;
   }, []);
 
   const clearUserData = useCallback(() => {
-    localStorage.removeItem('userData');
-    localStorage.removeItem('token');
-    window.location.reload();
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('userData');
+      localStorage.removeItem('token');
+      window.location.reload();
+    }
   }, []);
 
   return {
