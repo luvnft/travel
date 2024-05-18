@@ -24,7 +24,7 @@ export const DatePickerWithRange: React.FC<DatePickerWithRangeProps> = ({ classN
   }, [date, onChange]);
 
   return (
-    <div className={cn("flex flex-col items-center justify-center gap-6 p-1 min-h-screen", className)}>
+    <div className={cn("flex flex-col items-center justify-center gap-6 p-1", className)}>
       <h1 className="text-3xl font-bold text-center mb-4">Select your stay dates</h1>
       <p className="text-base font-bold text-center mb-4">
         {date?.from ? (

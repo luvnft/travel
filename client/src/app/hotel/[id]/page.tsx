@@ -151,7 +151,7 @@ const HotelViewPage: React.FC = () => {
       <Navbar />
       {hotel && (
         <div className="text-center mt-8">
-          <h1 className="text-3xl font-bold">Checkout and book {hotel.name}</h1>
+          <h1 className="text-3xl font-bold"> {hotel.name}</h1>
         </div>
       )}
       {error ? (
