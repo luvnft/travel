@@ -41,6 +41,14 @@ const HotelViewPage: React.FC = () => {
   const [checkOutDate, setCheckOutDate] = useState<string>('');
   const { getUserData } = useAuth();
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsClient(true);
+    }
+  }, []);
+
 
   useEffect(() => {
     const fetchHotelAndRooms = async () => {
@@ -119,8 +127,9 @@ const HotelViewPage: React.FC = () => {
       hotelImage: hotel?.images[0] || 'https://placehold.co/600x400'
     };
 
-    localStorage.setItem("bookingData", JSON.stringify(bookingData));
-
+    if (isClient) {
+      localStorage.setItem("bookingData", JSON.stringify(bookingData));
+    }
     try {
       const { checkoutUrl } = await payHotel(email, totalAmount);
       window.location.href = checkoutUrl;

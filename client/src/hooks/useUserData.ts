@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface UserData {
   _id: string;
@@ -18,25 +18,43 @@ interface LoginResponse {
 }
 
 export const useAuth = () => {
-  const setUserData = useCallback((loginResponse: LoginResponse) => {
-    localStorage.setItem('userData', JSON.stringify(loginResponse.user));
-    localStorage.setItem('token', loginResponse.token);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsClient(true);
+    }
   }, []);
+
+  const setUserData = useCallback((loginResponse: LoginResponse) => {
+    if (isClient) {
+      localStorage.setItem('userData', JSON.stringify(loginResponse.user));
+      localStorage.setItem('token', loginResponse.token);
+    }
+  }, [isClient]);
 
   const getUserData = useCallback((): UserData | null => {
-    const userData = localStorage.getItem('userData');
-    return userData ? (JSON.parse(userData) as UserData) : null;
-  }, []);
+    if (isClient) {
+      const userData = localStorage.getItem('userData');
+      return userData ? (JSON.parse(userData) as UserData) : null;
+    }
+    return null;
+  }, [isClient]);
 
   const getToken = useCallback((): string | null => {
-    return localStorage.getItem('token');
-  }, []);
+    if (isClient) {
+      return localStorage.getItem('token');
+    }
+    return null;
+  }, [isClient]);
 
   const clearUserData = useCallback(() => {
-    localStorage.removeItem('userData');
-    localStorage.removeItem('token');
-    window.location.reload();
-  }, []);
+    if (isClient) {
+      localStorage.removeItem('userData');
+      localStorage.removeItem('token');
+      window.location.reload();
+    }
+  }, [isClient]);
 
   return {
     setUserData,
