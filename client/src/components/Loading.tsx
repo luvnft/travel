@@ -1,12 +1,13 @@
 import React from 'react';
-import {Spinner} from '@/components/ui/Spinner';
 import { motion } from "framer-motion";
 
 const loadingCircleTransition = {
-  duration: 0.4,
-  yoyo: Infinity,
+  duration: 0.6,
+  repeat: Infinity,
+  repeatType: "reverse" as const,
   ease: "easeInOut",
 };
+
 const loadingContainer = {
   width: "4rem",
   height: "4rem",
@@ -20,7 +21,8 @@ const loadingCircle = {
   height: "1rem",
   backgroundColor: "#3A36DB",
   borderRadius: "0.5rem",
-};  
+};
+
 const loadingContainerVariants = {
   start: {
     transition: {
@@ -46,10 +48,8 @@ const loadingCircleVariants = {
 const Loading = () => {
   return (
     <div>
-      {/* Background overlay */}
       <div className="fixed w-full min-h-screen z-50 bg-black opacity-30">
         <div className="flex fixed w-full justify-center items-center h-screen">
-          {/* Loading animation */}
           <motion.div
             style={loadingContainer}
             variants={loadingContainerVariants}
@@ -77,6 +77,5 @@ const Loading = () => {
     </div>
   );
 };
-
 
 export default Loading;

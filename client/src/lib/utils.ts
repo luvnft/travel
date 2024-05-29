@@ -6,8 +6,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const truncateText = (text: string, maxLength: number): string => {
-  if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength) + '...';
-};
+export const truncateText = (text: string, length: number) => {
+  return text.length > length ? text.substring(0, length) + '...' : text;
+}
+
+export function convertEuroToMUR(euro: number) {
+  return euro * 50;
+}
+
+
 export { format }; 
