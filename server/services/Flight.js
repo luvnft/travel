@@ -1,12 +1,14 @@
-// Import the Amadeus SDK
+require('dotenv').config();
 const Amadeus = require("amadeus");
 const countriesList = require('countries-list');
-const fetch = require('node-fetch'); 
+const fetch = require('node-fetch');
 const nodemailer = require("nodemailer");
 const smtpTransport = require("nodemailer-smtp-transport");
 const fs = require("fs");
 const ejs = require("ejs");
 const path = require("path");
+const FlightBooking = require("../models/FlightBooking");
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const amadeus = new Amadeus({
   clientId: 'IRzZGIP6Cpofb1JALx9idthdO6UZJmH7',
@@ -32,7 +34,7 @@ const autocompleteLocations = async (keyword) => {
       throw new Error("Keyword is required for the autocomplete service.");
     }
 
-    
+
 
     const response = await amadeus.referenceData.locations.get({
       keyword: keyword,
@@ -63,7 +65,7 @@ const getAirports = async (params) => {
     return response.data;
   } catch (error) {
     console.error("Error in getAirports:", error.message || error.response);
-    throw error; 
+    throw error;
   }
 };
 
@@ -205,7 +207,7 @@ const getFlightOffersPricing = async (flightOffers) => {
       },
     };
 
-  
+
     const response = await amadeus.shopping.flightOffers.pricing.post(JSON.stringify(requestData));
     const data = JSON.parse(response.body);
 
@@ -238,7 +240,7 @@ const getFlightOffersPricing = async (flightOffers) => {
     return data;
   } catch (error) {
     console.error("Error in getFlightOffersPricing:", error.message);
-    throw error; 
+    throw error;
   }
 };
 
@@ -246,67 +248,81 @@ const getFlightOffersPricing = async (flightOffers) => {
 const transporter = nodemailer.createTransport(smtpTransport({
   host: "smtp.sendgrid.net",
   port: 587,
-  secure: false, 
+  secure: false,
   auth: {
-    user: "apikey", 
+    user: "apikey",
     pass: process.env.EMAIL,
   },
 }));
 
-
 const sendBookingEmail = async (contact, bookingDetails) => {
-  const templatePath = path.join(__dirname, '../email/flight_confirm.html');
-  const templateFile = fs.readFileSync(templatePath, 'utf-8');
-  const emailContent = ejs.render(templateFile, { bookingDetails });
-
-  console.log("Sending email to:", contact.emailAddress); // Debug log
-  if (!contact.emailAddress) {
-    console.error("Contact email is undefined or empty");
-    throw new Error("Contact email is undefined or empty"); // Stop execution if no email
-  }
-
-
-  const mailOptions = {
-    from: "erkadoovince@gmail.com", 
-    to: contact.emailAddress, 
-    subject: "Booking Confirmation - vincedotcodes Flight Booking",
-    html: emailContent,
-  };
-
   try {
+    const templatePath = path.join(__dirname, '../email/flight_confirm.html');
+    const templateFile = fs.readFileSync(templatePath, 'utf-8');
+    const emailContent = ejs.render(templateFile, { bookingDetails });
+
+    if (!contact.emailAddress) {
+      console.error("Contact email is undefined or empty");
+      throw new Error("Contact email is undefined or empty");
+    }
+
+    console.log("Sending email to:", contact.emailAddress);
+
+    const mailOptions = {
+      from: "erkadoovince@gmail.com",
+      to: contact.emailAddress,
+      subject: "Booking Confirmation - MoTravel Flight Booking",
+      html: emailContent,
+    };
+
     await transporter.sendMail(mailOptions);
-    console.log("Email sent to", contact.email);
+    console.log("Email sent successfully to:", contact.emailAddress);
+    return true;
   } catch (error) {
     console.error("Error sending email:", error);
     throw error;
   }
 };
 
+const generateTransactionId = () => {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let result = 'TXN-';
+  for (let i = 0; i < 12; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+};
 
-const confirmBooking = async ({ flightOffer, travelerInfo, contacts }) => {
-  
+const confirmBooking = async ({ flightOffer, travelerInfo, contacts, userId }) => {
   if (!flightOffer || !travelerInfo || !contacts || contacts.length === 0) {
-    return ({ message: "Invalid input" });
+    return { message: "Invalid input" };
   }
 
   try {
+    contacts.forEach(contact => {
+      if (typeof contact.address.lines === 'string') {
+        contact.address.lines = [contact.address.lines];
+      }
+    });
+
+    const travelers = Array.isArray(travelerInfo) ? travelerInfo : [travelerInfo];
     const requestData = {
       data: {
         type: "flight-order",
         flightOffers: [flightOffer],
-        travelers: travelerInfo,
+        travelers: travelers,
         contacts: contacts,
-        "remarks": {
-          "general": [
+        remarks: {
+          general: [
             {
-              "subType": "GENERAL_MISCELLANEOUS",
-              "text": "ONLINE BOOKING FROM INCREIBLE VIAJES"
+              subType: "GENERAL_MISCELLANEOUS",
+              text: "ONLINE BOOKING FROM INCREIBLE VIAJES"
             }
           ]
         },
-        "ticketingAgreement": {
-          "option": "DELAY_TO_CANCEL",
-          "delay": "6D"
+        ticketingAgreement: {
+          option: "DELAY_TO_CANCEL",
+          delay: "6D"
         },
       },
     };
@@ -314,15 +330,79 @@ const confirmBooking = async ({ flightOffer, travelerInfo, contacts }) => {
     const response = await amadeus.booking.flightOrders.post(JSON.stringify(requestData));
     const bookingData = JSON.parse(response.body);
 
+    const contactInfo = contacts[0];
+    const userName = `${contactInfo.addresseeName.firstName} ${contactInfo.addresseeName.lastName}`;
+    const userEmail = contactInfo.emailAddress;
+
+    const newBooking = new FlightBooking({
+      transactionId: generateTransactionId(),
+      user: {
+        id: userId,
+        name: userName,
+        email: userEmail,
+      },
+      itineraries: flightOffer.itineraries,
+      price: {
+        currency: flightOffer.price.currency,
+        total: parseFloat(flightOffer.price.total),
+        base: parseFloat(flightOffer.price.base),
+      },
+      isPaid: true,
+    });
+
+    await newBooking.save();
+    console.log("Booking saved successfully:", newBooking);
 
     await sendBookingEmail(contacts[0], bookingData);
+    console.log("Booking email sent successfully");
 
     return bookingData;
   } catch (error) {
     console.error("Error in confirmBooking:", error);
-    return { message: "Error booking flight", error: error };
+    return { message: "Error booking flight", error: error.message };
   }
 };
+
+
+const payFlight = async (email, amountInMUR) => {
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'eur',
+            product_data: {
+              name: 'Flight Booking Payment',
+            },
+            unit_amount: Math.round(amountInMUR * 100),
+          },
+          quantity: 1,
+        },
+      ],
+      customer_email: email,
+      mode: 'payment',
+      success_url: process.env.FLIGHT_SUCCESS_URL,
+      cancel_url: process.env.FLIGHT_CANCEL_URL,
+    });
+
+    return session.url;
+  } catch (error) {
+    throw new Error('Failed to create checkout session: ' + error.message);
+  }
+};
+
+const getFlightBookingsByUserId = async (userId) => {
+  try {
+    const bookings = await FlightBooking.find({ 'user.id': userId }).exec();
+    return bookings;
+  } catch (error) {
+    console.error("Error fetching bookings:", error);
+    throw error;
+  }
+};
+
 
 
 module.exports = {
@@ -331,4 +411,6 @@ module.exports = {
   getFlights,
   getFlightOffersPricing,
   confirmBooking,
+  payFlight,
+  getFlightBookingsByUserId,
 };

@@ -196,3 +196,25 @@ export interface FlightPricingProps {
   }>;
   offerType: string;
 }
+
+export interface PriceBooking {
+  currency: string;
+  total: number; // Change from string to number
+  base: number;
+}
+
+export interface FlightBooking {
+  transactionId: string;
+  user: {
+      id: string;
+      name: string;
+      email: string;
+  };
+  itineraries: Itinerary[];
+  price: PriceBooking;
+  isPaid: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+

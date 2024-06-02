@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { getBookingsByUserId, Booking } from '@/services/booking';
+import { fetchFlightBookingsByUserId } from '@/services/flight';
+import { FlightBooking } from '@/helper/types';
 import { useAuth } from '@/hooks/useUserData';
 import Loading from '@/components/Loading';
-import BookingCard from '@/components/booking/BookingCard';
-import Footer from "@/components/ui/footer";
+import FlightBookingCard from '@/components/booking/FlightBookingCard';
 import {
     Pagination,
     PaginationContent,
@@ -25,12 +25,11 @@ import {
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/navbar';
 import { Separator } from '@/components/ui/separator';
-import { useParams } from 'next/navigation';
 import ErrorCard from '@/components/ErrorCard';
-
+import NoBookings from '@/components/booking/NoBookings';
 
 const BookingsList: React.FC = () => {
-    const [userBookings, setUserBookings] = useState<Booking[]>([]);
+    const [userBookings, setUserBookings] = useState<FlightBooking[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const { getUserData } = useAuth();
@@ -43,10 +42,9 @@ const BookingsList: React.FC = () => {
     useEffect(() => {
         const fetchUserBookings = async () => {
             try {
-                const { bookings } = await getBookingsByUserId(id as string);
+                const bookings = await fetchFlightBookingsByUserId(id as string);
                 setUserBookings(bookings);
             } catch (err: any) {
-                console.log(err.message)
                 setError(err.message);
             } finally {
                 setLoading(false);
@@ -68,7 +66,7 @@ const BookingsList: React.FC = () => {
             return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
         }
         if (sortType === 'price') {
-            return b.totalAmount - a.totalAmount;
+            return b.price.total - a.price.total;
         }
         return 0;
     });
@@ -81,9 +79,9 @@ const BookingsList: React.FC = () => {
 
     if (loading) return <Loading />;
 
-    if (error) return   <div className='my-4'> <ErrorCard message={error}/></div>;
+    if (error) return <div className='my-4'> <ErrorCard message={error} /></div>;
 
-    if (!userBookings.length) return <div>No bookings found</div>;
+    if (!userBookings.length) return <NoBookings />;
 
     const totalPages = Math.ceil(userBookings.length / bookingsPerPage);
     const startPage = Math.floor((currentPage - 1) / pagesToShow) * pagesToShow + 1;
@@ -93,6 +91,7 @@ const BookingsList: React.FC = () => {
     return (
         <div>
             <Navbar />
+            
             <div className="flex justify-between mx-6 flex-wrap">
                 <h1 className="text-2xl font-bold">My Bookings</h1>
                 <DropdownMenu>
@@ -111,18 +110,7 @@ const BookingsList: React.FC = () => {
                 <Separator />
             </div>
             {currentBookings.map(booking => (
-                <BookingCard
-                    key={booking._id}
-                    transactionId={booking.transactionId}
-                    hotelName={booking.hotel.name}
-                    hotelImage={booking.hotel.images[0] || 'https://placehold.co/600x400'}
-                    roomsCount={booking.rooms.length}
-                    checkInDate={new Date(booking.checkInDate).toLocaleString()}
-                    checkOutDate={new Date(booking.checkOutDate).toLocaleString()}
-                    bookedDate={new Date(booking.createdAt).toLocaleString()}
-                    amount={booking.totalAmount}
-                    isPaid={booking.isPaid}
-                />
+                <FlightBookingCard key={booking.transactionId} booking={booking} />
             ))}
             <div className="my-10 flex justify-center">
                 <Pagination className="flex flex-wrap justify-center">
@@ -152,7 +140,6 @@ const BookingsList: React.FC = () => {
                     </PaginationContent>
                 </Pagination>
             </div>
-            <Footer />
         </div>
     );
 };

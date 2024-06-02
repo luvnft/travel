@@ -36,11 +36,10 @@ const UserDropdown = () => {
                 <DropdownMenuItem className="px-2 py-1 hover:bg-gray-100 hover:text-slate-800" onClick={() => handleNavigate('/account/listings')}>
                     My Listings
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="px-2 py-1 hover:bg-gray-100 hover:text-slate-800">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
+                <DropdownMenuItem className="px-2 py-1 hover:bg-gray-100 hover:text-slate-800" onClick={() => handleNavigate('/account/flights')}>
+                    My Flights
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem className="px-2 py-1 hover:bg-gray-100 hover:text-slate-800" onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
                     Log out

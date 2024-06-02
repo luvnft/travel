@@ -97,8 +97,14 @@ const getBookingsByHotelId = async (hotelId) => {
         throw new Error('Failed to fetch bookings: ' + error.message);
     }
 };
+const MUR_TO_USD_CONVERSION_RATE = 0.023; 
 
 const payHotel = async (email, amount) => {
+
+    const amountInUSD = Math.round(amount * MUR_TO_USD_CONVERSION_RATE * 100); 
+
+
+
     try {
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
@@ -109,7 +115,7 @@ const payHotel = async (email, amount) => {
                         product_data: {
                             name: 'Booking Payment',
                         },
-                        unit_amount: amount * 100,
+                         unit_amount: amountInUSD,
                     },
                     quantity: 1,
                 },

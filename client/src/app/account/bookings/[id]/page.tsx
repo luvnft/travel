@@ -26,7 +26,7 @@ import Navbar from '@/components/navbar';
 import { Separator } from '@/components/ui/separator';
 import { useParams } from 'next/navigation';
 import ErrorCard from '@/components/ErrorCard';
-
+import Footer from "@/components/ui/footer";
 
 const BookingsList: React.FC = () => {
     const [userBookings, setUserBookings] = useState<Booking[]>([]);
@@ -152,6 +152,7 @@ const BookingsList: React.FC = () => {
                     </PaginationContent>
                 </Pagination>
             </div>
+            <Footer />
         </div>
     );
 };

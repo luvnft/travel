@@ -1,7 +1,7 @@
 // routes/flight.js
 const express = require('express');
 const router = express.Router();
-const { autocompleteController, getAirportsController, getFlightsController, getFlightOfferPricingController, bookFlightController } = require('../controllers/Flight');
+const { autocompleteController, getAirportsController, getFlightsController, getFlightOfferPricingController, bookFlightController, payFlightController, getFlightBookingsByUserIdController } = require('../controllers/Flight');
 
 
 /**
@@ -223,7 +223,7 @@ router.post('/pricing', getFlightOfferPricingController);
  *     tags:
  *       - Flight
  *     summary: Confirm and book a flight
- *     description: This endpoint is used to confirm and book a flight based on the provided flight offer, traveler information, and contact details.
+ *     description: This endpoint is used to confirm and book a flight based on the provided flight offer, traveler information, contact details, and user ID.
  *     requestBody:
  *       required: true
  *       content:
@@ -234,6 +234,7 @@ router.post('/pricing', getFlightOfferPricingController);
  *               - flightOffer
  *               - travelerInfo
  *               - contacts
+ *               - userId
  *             properties:
  *               flightOffer:
  *                 type: object
@@ -248,6 +249,9 @@ router.post('/pricing', getFlightOfferPricingController);
  *                 items:
  *                   type: object
  *                 description: An array of contact details for the booking.
+ *               userId:
+ *                 type: string
+ *                 description: The ID of the user making the booking.
  *     responses:
  *       200:
  *         description: Flight booking confirmed
@@ -269,5 +273,160 @@ router.post('/pricing', getFlightOfferPricingController);
  */
 
 router.post('/book', bookFlightController);
+
+/**
+ * @swagger
+ * /api/flight/pay:
+ *   post:
+ *     tags:
+ *       - Flight
+ *     summary: Process flight payment
+ *     description: Creates a payment session for flight booking.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - amountInMUR
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: Customer's email address.
+ *               amountInMUR:
+ *                 type: number
+ *                 description: Amount to be paid in Mauritian Rupees.
+ *     responses:
+ *       200:
+ *         description: URL for the payment session.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 url:
+ *                   type: string
+ *                   description: URL for the payment session.
+ *       400:
+ *         description: Bad Request, such as missing required fields.
+ *       500:
+ *         description: Internal Server Error
+ */
+
+router.post('/pay', payFlightController);
+
+
+
+/**
+ * @swagger
+ * /api/flight/bookings/user/{userId}:
+ *   get:
+ *     tags: [Flight]
+ *     summary: Get flight bookings by user ID
+ *     description: Retrieves flight bookings associated with a specific user ID.
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         description: The ID of the user whose bookings are to be retrieved.
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: An array of flight bookings for the specified user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   transactionId:
+ *                     type: string
+ *                     description: The transaction ID of the booking.
+ *                   user:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         description: The user ID.
+ *                       name:
+ *                         type: string
+ *                         description: The name of the user.
+ *                       email:
+ *                         type: string
+ *                         description: The email of the user.
+ *                   itineraries:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         segments:
+ *                           type: array
+ *                           items:
+ *                             type: object
+ *                             properties:
+ *                               departure:
+ *                                 type: object
+ *                                 properties:
+ *                                   iataCode:
+ *                                     type: string
+ *                                   countryName:
+ *                                     type: string
+ *                                   at:
+ *                                     type: string
+ *                                     format: date-time
+ *                               arrival:
+ *                                 type: object
+ *                                 properties:
+ *                                   iataCode:
+ *                                     type: string
+ *                                   countryName:
+ *                                     type: string
+ *                                   at:
+ *                                     type: string
+ *                                     format: date-time
+ *                               carrierCode:
+ *                                 type: string
+ *                               airlineLogo:
+ *                                 type: string
+ *                               duration:
+ *                                 type: string
+ *                               numberOfStops:
+ *                                 type: integer
+ *                               aircraft:
+ *                                 type: object
+ *                                 properties:
+ *                                   code:
+ *                                     type: string
+ *                                   name:
+ *                                     type: string
+ *                   price:
+ *                     type: object
+ *                     properties:
+ *                       currency:
+ *                         type: string
+ *                       total:
+ *                         type: number
+ *                       base:
+ *                         type: number
+ *                   isPaid:
+ *                     type: boolean
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *       400:
+ *         description: Invalid user ID parameter.
+ *       500:
+ *         description: Error fetching bookings.
+ */
+
+router.get('/bookings/user/:userId', getFlightBookingsByUserIdController);
+
 
 module.exports = router;

@@ -43,6 +43,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { ToastAction } from "@/components/ui/toast"
 import dynamic from 'next/dynamic';
 import Rating from '@/components/Rating';
+import Footer from "@/components/ui/footer";
 const MyMap = dynamic(() => import('@/components/Map'), { ssr: false });
 
 const amenities = [
@@ -324,6 +325,7 @@ export default function CreateHotel() {
                     </div>
                 </div>
             )}
+            <Footer />
         </div>
     );
 }

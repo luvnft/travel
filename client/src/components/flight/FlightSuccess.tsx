@@ -1,58 +1,43 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-
-import { PlaneTakeoff, PlaneLanding, Luggage, ChefHat } from 'lucide-react';
-import { Button } from "@/components/ui/button";
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { FlightPricingProps } from '@/helper/types';
 import { convertEuroToMUR } from '@/lib/utils';
-import { useRouter } from 'next/navigation';
+import { PlaneTakeoff, PlaneLanding } from 'lucide-react';
+import { FlightPricingProps } from '@/helper/types';
 
-
-interface FlightPricingCardProps {
+interface FlightSuccessProps {
   flightOffer: FlightPricingProps;
 }
 
-export default function FlightPricingCard({ flightOffer }: FlightPricingCardProps) {
+export default function FlightSuccess() {
   const router = useRouter();
-  const [isClient, setIsClient] = useState(false);
-
+  const [flightOffer, setFlightOffer] = useState<FlightPricingProps | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setIsClient(true);
+      const storedFlightOffer = localStorage.getItem("flightOfferForBooking");
+      if (storedFlightOffer) {
+        setFlightOffer(JSON.parse(storedFlightOffer));
+      }
     }
   }, []);
+
   if (!flightOffer) {
     return <div>No flight offer available</div>;
   }
 
-
-  const { itineraries, price, numberOfBookableSeats, travelerPricings, offerType } = flightOffer;
+  const { itineraries, price, offerType } = flightOffer;
 
   if (!price || !itineraries || itineraries.length === 0) {
     return <div>Price or itineraries information is missing</div>;
   }
 
-  const { total, base, fees } = price;
+  const { total } = price;
   const firstSegment = itineraries[0]?.segments[0];
   const lastSegment = itineraries[itineraries.length - 1]?.segments[itineraries[itineraries.length - 1].segments.length - 1];
-
-  const co2Color = (weight: number) => weight < 100 ? 'text-green-500' : 'text-red-500';
-
-
-  const handleBookNow = async () => {
-
-    if (isClient) {
-      localStorage.setItem("flightOfferForBooking", JSON.stringify(flightOffer));
-      localStorage.setItem("bookingPrice", JSON.stringify(total));
-    }
-    router.push('/flight/checkout');
-  }
-
 
   return (
     <Card className="w-screen max-w-2xl border rounded-lg shadow-lg">
@@ -86,14 +71,9 @@ export default function FlightPricingCard({ flightOffer }: FlightPricingCardProp
             <div className="font-semibold text-lg text-gray-900 dark:text-white">
               Rs {convertEuroToMUR(parseFloat(total)).toFixed(2)}
             </div>
-            {offerType && (
-              <span className={`px-2 py-1 mt-1 text-sm font-medium rounded-full ${offerType === 'Cheapest' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
-                {offerType}
-              </span>
-            )}
-            <Button variant="default" className="mt-4 w-full" onClick={handleBookNow}>
-              Proceed to Checkout
-            </Button>
+            <Badge variant="default" className="mt-2 text-green-800 bg-green-100">
+              Paid
+            </Badge>
           </div>
         </div>
       </CardHeader>
@@ -132,42 +112,12 @@ export default function FlightPricingCard({ flightOffer }: FlightPricingCardProp
                     <div className="text-sm text-gray-500 dark:text-gray-400">
                       {segment.departure.iataCode} ({segment.departure.countryName}) - {segment.arrival.iataCode} ({segment.arrival.countryName})
                     </div>
-                    <div className="font-semibold">
-                      {segment.numberOfStops === 0 ? "Nonstop" : `${segment.numberOfStops} stop(s)`}
-                    </div>
-                    <div className="flex items-center gap-2 mt-2">
-                      <span>{segment.aircraft.name} ({segment.aircraft.code})</span>
-                    </div>
-                    <Badge variant="secondary" className={`text-sm ${co2Color(segment.co2Emissions[0].weight)}`} >
-                      CO2 Emissions: {segment.co2Emissions[0].weight} {segment.co2Emissions[0].weightUnit}
-                    </Badge>
                   </div>
-                </div>
-                <div className="mt-2">
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Fare Details:</div>
-                  <ul className="list-disc list-inside text-sm">
-                    <li>Cabin: {travelerPricings[0].fareDetailsBySegment[segIndex]?.cabin}</li>
-                    <li>Fare Basis: {travelerPricings[0].fareDetailsBySegment[segIndex]?.fareBasis}</li>
-                    <li>Branded Fare: {travelerPricings[0].fareDetailsBySegment[segIndex]?.brandedFare}</li>
-                    <li>Class: {travelerPricings[0].fareDetailsBySegment[segIndex]?.class}</li>
-                    <li>Included Checked Bags: <Luggage className="inline-block w-5 h-5 text-gray-500" /> {travelerPricings[0].fareDetailsBySegment[segIndex]?.includedCheckedBags.quantity}</li>
-                  </ul>
                 </div>
               </div>
             ))}
           </div>
         ))}
-        <Separator className="my-4" />
-        <div className="mt-4">
-          <div className="font-semibold mb-2">Price Breakdown:</div>
-          <ul className="list-disc list-inside text-sm">
-            <li>Base Price: Rs {convertEuroToMUR(parseFloat(base)).toFixed(2)}</li>
-            {fees.map((fee, index) => (
-              <li key={index}>{fee.type}: Rs {convertEuroToMUR(parseFloat(fee.amount)).toFixed(2)}</li>
-            ))}
-            <li>Total Price: Rs {convertEuroToMUR(parseFloat(total)).toFixed(2)}</li>
-          </ul>
-        </div>
       </CardContent>
     </Card>
   );

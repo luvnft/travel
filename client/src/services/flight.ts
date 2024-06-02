@@ -1,5 +1,5 @@
 import axios, { AxiosResponse, AxiosError } from 'axios';
-import { Flight, FlightPricingProps } from '@/helper/types';
+import { Flight, FlightPricingProps, FlightBooking  } from '@/helper/types';
 
 export interface Airport {
     id: string;
@@ -116,6 +116,66 @@ export const fetchFlightPricing = async (
                 statusCode: 500,
                 message: ['Network Error or Internal Server Error'],
                 error: 'Server Error',
+            }));
+        }
+    }
+};
+
+
+export const bookFlight = async (
+    flightOffer: any,
+    travelerInfo: any[],
+    contacts: any[],
+    userId: string
+): Promise<ApiResponse<any>> => {
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/flight/book`;
+
+    try {
+        const response: AxiosResponse<ApiResponse<any>> = await axios.post(url, {
+            flightOffer,
+            travelerInfo,
+            contacts,
+            userId
+        });
+
+        return response.data;
+    } catch (error) {
+        const axiosError = error as AxiosError<ApiResponse<any>>;
+        if (axiosError.response) {
+            throw new Error(JSON.stringify({
+                statusCode: axiosError.response.status,
+                message: axiosError.response.data.message || ['An unexpected error occurred'],
+                error: axiosError.response.data.error || 'Bad Request',
+            }));
+        } else {
+            throw new Error(JSON.stringify({
+                statusCode: 500,
+                message: ['Network Error or Internal Server Error'],
+                error: 'Server Error',
+            }));
+        }
+    }
+};
+
+export const fetchFlightBookingsByUserId = async (userId: string): Promise<FlightBooking[]> => {
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/flight/bookings/user/${userId}`;
+
+    try {
+        const response: AxiosResponse<FlightBooking[]> = await axios.get(url);
+        return response.data || [];
+    } catch (error) {
+        const axiosError = error as AxiosError<ApiResponse<any>>;
+        if (axiosError.response) {
+            throw new Error(JSON.stringify({
+                statusCode: axiosError.response.status,
+                message: axiosError.response.data.message || ['An unexpected error occurred'],
+                error: axiosError.response.data.error || 'Bad Request'
+            }));
+        } else {
+            throw new Error(JSON.stringify({
+                statusCode: 500,
+                message: ['Network Error or Internal Server Error'],
+                error: 'Server Error'
             }));
         }
     }

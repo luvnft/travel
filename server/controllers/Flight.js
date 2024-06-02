@@ -72,20 +72,15 @@ const getFlightOfferPricingController = async (req, res) => {
 
 const bookFlightController = async (req, res) => {
   try {
+    const { flightOffer, travelerInfo, contacts, userId } = req.body;
 
-
-    const flightOffer = req.body.flightOffer;
-    const travelerInfo = req.body.travelerInfo;
-    const contacts = req.body.contacts;
-
-
-    if (!flightOffer || !travelerInfo || travelerInfo.length === 0 || !contacts || contacts.length === 0) {
-      return res.status(400).json({ error: "Missing required booking details: flightOffer, travelerInfo, and contacts are required." });
+    if (!flightOffer || !travelerInfo || travelerInfo.length === 0 || !contacts || contacts.length === 0 || !userId) {
+      return res.status(400).json({ error: "Missing required booking details: flightOffer, travelerInfo, contacts, and userId are required." });
     }
 
-    const bookingDetails = await flightService.confirmBooking({ flightOffer, travelerInfo, contacts });
+    const bookingDetails = await flightService.confirmBooking({ flightOffer, travelerInfo, contacts, userId });
 
-    if (bookingDetails.confirmation) {
+    if (bookingDetails) {
       res.json({
         message: "Flight booking confirmed",
         bookingDetails
@@ -104,10 +99,43 @@ const bookFlightController = async (req, res) => {
 
 
 
+
+
+const payFlightController = async (req, res) => {
+  try {
+    const { email, amountInMUR } = req.body;
+
+    if (!email || !amountInMUR) {
+      return res.status(400).json({ error: "Missing required fields: email and amountInMUR are required." });
+    }
+
+    const paymentUrl = await flightService.payFlight(email, amountInMUR);
+    res.json({ url: paymentUrl });
+  } catch (error) {
+    console.error("Error in payFlightController:", error);
+    res.status(500).json({ error: error.message || "An error occurred while processing the payment." });
+  }
+};
+
+const getFlightBookingsByUserIdController = async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    const bookings = await flightService.getFlightBookingsByUserId(userId);
+    res.status(200).json(bookings);
+  } catch (error) {
+    console.error("Error in getFlightBookingsByUserIdController:", error);
+    res.status(500).json({ error: error.message || "An error occurred while fetching the bookings." });
+  }
+};
+
+
 module.exports = {
   autocompleteController,
   getAirportsController,
   getFlightsController,
   getFlightOfferPricingController,
   bookFlightController,
+  payFlightController,
+  getFlightBookingsByUserIdController,
 };
