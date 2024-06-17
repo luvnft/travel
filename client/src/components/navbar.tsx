@@ -40,18 +40,13 @@ export default function Navbar() {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/about" passHref className="block py-2 px-4 hover:bg-primary-foreground rounded-sm">
-                                    About
+                                <Link href="/taxi/listing" passHref className="block py-2 px-4 hover:bg-primary-foreground rounded-sm">
+                                    Taxi
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/pricing" passHref className="block py-2 px-4 hover:bg-primary-foreground rounded-sm">
-                                    Pricing
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/auth/login" passHref className="block py-2 px-4 hover:bg-primary-foreground rounded-sm">
-                                    Contact
+                                <Link href="/chat" passHref className="block py-2 px-4 hover:bg-primary-foreground rounded-sm">
+                                    AI Planner
                                 </Link>
                             </li>
                             {isLoggedIn ? (

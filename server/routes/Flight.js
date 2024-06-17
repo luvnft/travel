@@ -2,8 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { autocompleteController, getAirportsController, getFlightsController, getFlightOfferPricingController, bookFlightController, payFlightController, getFlightBookingsByUserIdController } = require('../controllers/Flight');
-
-
+const {chatController} = require('../controllers/Ai');
 /**
  * @swagger
  * tags:
@@ -427,6 +426,47 @@ router.post('/pay', payFlightController);
  */
 
 router.get('/bookings/user/:userId', getFlightBookingsByUserIdController);
+
+
+/**
+ * @swagger
+ * /api/flight/chat:
+ *   post:
+ *     tags: [Flight]
+ *     summary: Chat with the AI vacation planner
+ *     description: Interact with the AI to get vacation planning assistance and book flights. The AI will help with suggestions and booking flights based on user input.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 description: The user's message or query for the AI.
+ *     responses:
+ *       200:
+ *         description: The AI's response to the user's message.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 response:
+ *                   type: string
+ *                   description: The AI's response message.
+ *       400:
+ *         description: Bad request, such as missing required fields in the request body.
+ *       500:
+ *         description: Internal server error
+ */
+router.post('/chat', chatController);
+
+module.exports = router;
+
+
+
 
 
 module.exports = router;

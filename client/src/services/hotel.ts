@@ -161,3 +161,26 @@ export const getHotelById = async (id: string): Promise<Hotel> => {
       }
     }
   };
+
+  export const deleteHotel = async (id: string): Promise<void> => {
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/hotel/delete/${id}`;
+
+    try {
+        await axios.delete(url);
+    } catch (error) {
+        const axiosError = error as AxiosError<ApiResponse<any>>;
+        if (axiosError.response) {
+            throw new Error(JSON.stringify({
+                statusCode: axiosError.response.status,
+                message: axiosError.response.data.message || ['An unexpected error occurred'],
+                error: axiosError.response.data.error || 'Bad Request'
+            }));
+        } else {
+            throw new Error(JSON.stringify({
+                statusCode: 500,
+                message: ['Network Error or Internal Server Error'],
+                error: 'Server Error'
+            }));
+        }
+    }
+};

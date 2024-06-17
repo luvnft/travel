@@ -1,6 +1,7 @@
+// components/account/TaxiListingCard.tsx
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Trash } from "lucide-react";
+import { Trash, Car } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from 'next/link';
 import {
@@ -14,17 +15,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { deleteHotel } from '@/services/hotel';  // Import the delete service
-import { LoadingButton } from '@/components/ui/loading-button';  // Import LoadingButton
-import { useToast } from "@/components/ui/use-toast";
-import { ToastAction } from "@/components/ui/toast";
 
-interface ListingCardProps {
+interface TaxiListingCardProps {
   id: string;
-  title: string;
-  pricePerNight: number;
-  description: string;
-  imageUrl: string;
+  make: string;
+  model: string;
+  year: number;
+  licensePlate: string;
+  color: string;
+  capacity: number;
+  ratePerKm: number;
   loading?: boolean;
 }
 
@@ -47,37 +47,8 @@ function SkeletonCard() {
   );
 }
 
-export default function ListingCard({ id, title, pricePerNight, description, imageUrl, loading }: ListingCardProps) {
+export default function TaxiListingCard({ id, make, model, year, licensePlate, color, capacity, ratePerKm,  loading }: TaxiListingCardProps) {
   const [showDialog, setShowDialog] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const { toast } = useToast();
-
-  const handleDelete = async () => {
-    setDeleting(true);
-    try {
-      await deleteHotel(id);
-      setShowDialog(false);
-
-      toast({
-        title: "Success",
-        description: `${title} has been deleted successfully.`,
-        variant: "default",
-      });
-
-      // Refresh or update the list of hotels here as needed
-    } catch (error) {
-      console.error('Error deleting hotel:', error);
-
-      toast({
-        variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: "There was a problem with your request.",
-        action: <ToastAction altText="Try again">Try again</ToastAction>,
-      });
-    } finally {
-      setDeleting(false);
-    }
-  };
 
   if (loading) {
     return <SkeletonCard />;
@@ -85,16 +56,18 @@ export default function ListingCard({ id, title, pricePerNight, description, ima
 
   return (
     <div className="flex flex-col md:flex-row items-start gap-4 rounded-lg border border-gray-200 p-4 dark:border-gray-800 my-2">
-      <img
-        alt="Hotel Image"
-        className="aspect-video rounded-lg object-cover w-full md:w-40 md:h-40"
-        src={imageUrl}
-      />
+      <div className="aspect-video rounded-lg object-cover w-full md:w-40 md:h-40 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+        <Car size={40} color='#3B82F6' />
+      </div>
       <div className="flex-1">
         <div className="flex items-start justify-between">
           <div>
-            <h3 className="font-medium">{title}</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">${pricePerNight} / night</p>
+            <h3 className="font-medium">{make} {model}</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Year: {year}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">License Plate: {licensePlate}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Color: {color}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Capacity: {capacity}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Rate: Rs {ratePerKm} / km</p>
           </div>
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -112,31 +85,23 @@ export default function ListingCard({ id, title, pricePerNight, description, ima
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete {title}.
+                  This action cannot be undone. This will permanently delete {make} {model}.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel onClick={() => setShowDialog(false)}>Cancel</AlertDialogCancel>
-                <LoadingButton
-                  onClick={handleDelete}
-                  loading={deleting}
-                  disabled={deleting}
-                >
+                <AlertDialogAction onClick={() => {
+                  setShowDialog(false);
+                }}>
                   Continue
-                </LoadingButton>
+                </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
         </div>
-        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 break-words">
-          {description}
-        </p>
         <div className="flex flex-wrap gap-2 mt-8">
-          <Link href={`/account/rooms/${id}`}>
-            <Button variant="secondary">View Room</Button>
-          </Link>
-          <Link href={`/account/bookings/${id}`}>
-            <Button variant="outline">View Bookings</Button>
+          <Link href={`/account/taxi/booking/${id}`}>
+            <Button variant="secondary">View Bookings</Button>
           </Link>
         </div>
       </div>

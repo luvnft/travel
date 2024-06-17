@@ -11,36 +11,61 @@ import ListingCard from "@/components/account/ListingCard";
 import { Separator } from "@/components/ui/separator";
 import Link from 'next/link';
 import { getHotelsByUserId, Hotel } from '@/services/hotel';
+import { getTaxisByUserId, Taxi } from '@/services/taxi';
+import { getAnalytics, Analytics } from '@/services/analytics';
 import { useAuth } from '@/hooks/useUserData';
 import { truncateText } from '@/lib/utils';
+import TaxiListingCard from "@/components/taxi/TaxiListingCard";
+import Footer from "@/components/ui/footer";
 
 export default function ListingsPage() {
     const [listings, setListings] = useState<Hotel[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loadingHotels, setLoadingHotels] = useState(true);
+    const [loadingTaxis, setLoadingTaxis] = useState(true);
+    const [loadingAnalytics, setLoadingAnalytics] = useState(true);
     const { getUserData } = useAuth();
-
-    const dashboardData = {
-        listingsCount: 14,
-        transactionsCount: 120,
-        revenue: 58000,
-        occupancyRate: 75
-    };
+    const [taxis, setTaxis] = useState<Taxi[]>([]);
+    const [hotelError, setHotelError] = useState<string | null>(null);
+    const [analytics, setAnalytics] = useState<Analytics | null>(null);
 
     useEffect(() => {
         const fetchListings = async () => {
+            const userId = getUserData()?._id ?? '';
+            
             try {
-                const userId = getUserData()?._id ?? '';
-                const data = await getHotelsByUserId(userId);
-                setListings(data);
+                const hotelData = await getHotelsByUserId(userId);
+                setListings(hotelData);
             } catch (error) {
-                console.error("Failed to fetch listings:", error);
+                setHotelError("You don't have any listings yet, care to add some?");
             } finally {
-                setLoading(false);
+                setLoadingHotels(false);
+            }
+
+            try {
+                const taxiData = await getTaxisByUserId(userId);
+                setTaxis(taxiData);
+            } catch (error) {
+                console.error("Failed to fetch taxi listings:", error);
+            } finally {
+                setLoadingTaxis(false);
+            }
+
+            try {
+                const analyticsData = await getAnalytics();
+                setAnalytics(analyticsData);
+            } catch (error) {
+                console.error("Failed to fetch analytics data:", error);
+            } finally {
+                setLoadingAnalytics(false);
             }
         };
 
         fetchListings();
     }, []);
+
+    if (loadingHotels || loadingTaxis || loadingAnalytics) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div>
@@ -60,12 +85,10 @@ export default function ListingsPage() {
                             <Users2 className="h-6 w-6 text-blue-500" />
                         </CardHeader>
                         <CardContent className="p-4">
-                            <p className="text-2xl font-semibold">{dashboardData.listingsCount}</p>
+                            <p className="text-2xl font-semibold">{analytics?.totalListings}</p>
                             <p className="text-sm text-gray-500">Total Listings</p>
                         </CardContent>
-                        <CardFooter className="p-4">
-                            <Button variant="outline" className="w-full">View Listings</Button>
-                        </CardFooter>
+                    
                     </Card>
 
                     {/* Number of Transactions */}
@@ -75,12 +98,10 @@ export default function ListingsPage() {
                             <CreditCard className="h-6 w-6 text-green-500" />
                         </CardHeader>
                         <CardContent className="p-4">
-                            <p className="text-2xl font-semibold">{dashboardData.transactionsCount}</p>
+                            <p className="text-2xl font-semibold">{analytics?.totalTransactions}</p>
                             <p className="text-sm text-gray-500">Completed this month</p>
                         </CardContent>
-                        <CardFooter className="p-4">
-                            <Button variant="outline" className="w-full">View Transactions</Button>
-                        </CardFooter>
+                     
                     </Card>
 
                     {/* Revenue */}
@@ -90,7 +111,7 @@ export default function ListingsPage() {
                             <ShoppingCart className="h-6 w-6 text-purple-500" />
                         </CardHeader>
                         <CardContent className="p-4">
-                            <p className="text-2xl font-semibold">${dashboardData.revenue.toLocaleString()}</p>
+                            <p className="text-2xl font-semibold">Rs {analytics?.totalRevenue.toLocaleString()}</p>
                             <p className="text-sm text-gray-500">Total Revenue</p>
                         </CardContent>
                         <CardFooter className="p-4">
@@ -105,7 +126,7 @@ export default function ListingsPage() {
                             <LineChart className="h-6 w-6 text-orange-500" />
                         </CardHeader>
                         <CardContent className="p-4">
-                            <p className="text-2xl font-semibold">{dashboardData.occupancyRate}%</p>
+                            <p className="text-2xl font-semibold">{analytics?.totalRevenueForCurrentMonth}</p>
                             <p className="text-sm text-gray-500">Current month</p>
                         </CardContent>
                         <CardFooter className="p-4">
@@ -114,6 +135,7 @@ export default function ListingsPage() {
                     </Card>
                 </div>
 
+                <h2 className="text-2xl font-bold mt-8 mb-4">My Hotels</h2>
                 <div className="flex items-center justify-end my-4">
                     <div className="mt-4">
                         <Link href="/account/create">
@@ -121,19 +143,59 @@ export default function ListingsPage() {
                         </Link>
                     </div>
                 </div>
+                {hotelError ? (
+                    <div className="text-center my-8">
+                        <p className="text-xl">{hotelError}</p>
+                    </div>
+                ) : listings.length === 0 ? (
+                    <div className="text-center my-8">
+                        <p className="text-xl">You don't have any hotels listed.</p>
+                    </div>
+                ) : (
+                    listings.map((listing, index) => (
+                        <ListingCard
+                            id={listing._id}
+                            loading={loadingHotels}
+                            key={index}
+                            title={listing.name}
+                            pricePerNight={listing.cheapestPrice}
+                            description={truncateText(listing.description, 100)} // Truncate description to 100 characters
+                            imageUrl={listing.images[0]}
+                        />
+                    ))
+                )}
 
-                {listings.map((listing, index) => (
-                    <ListingCard
-                        id={listing._id}
-                        loading={loading}
-                        key={index}
-                        title={listing.name}
-                        pricePerNight={listing.cheapestPrice}
-                        description={truncateText(listing.description, 100)} // Truncate description to 100 characters
-                        imageUrl={listing.images[0]}
-                    />
-                ))}
+                {/* Taxi Listings */}
+                <h2 className="text-2xl font-bold mt-8 mb-4">My Taxis</h2>
+                <div className="flex items-center justify-end my-4">
+                    <div className="mt-4">
+                        <Link href="/account/taxi/create">
+                            <Button className="bg-blue-500 hover:bg-blue-600 text-white">Add Taxi</Button>
+                        </Link>
+                    </div>
+                </div>
+                {taxis.length === 0 ? (
+                    <div className="text-center my-8">
+                        <p className="text-xl">Are you a taxi owner and willing to make some bucks?</p>
+                    </div>
+                ) : (
+                    taxis.map((taxi, index) => (
+                        <TaxiListingCard
+                            key={index}
+                            id={taxi._id}
+                            make={taxi.make}
+                            model={taxi.model}
+                            year={taxi.year}
+                            licensePlate={taxi.licensePlate}
+                            color={taxi.color}
+                            capacity={taxi.capacity}
+                            ratePerKm={taxi.ratePerKm}
+                            loading={loadingTaxis}
+                        />
+                    ))
+                )}
             </div>
+            <Footer />
         </div>
     );
 }
